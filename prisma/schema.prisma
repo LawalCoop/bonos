@@ -1,0 +1,523 @@
+// Sistema de Bonos - La Bayer Experimental
+// Base de datos: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// CORE MODELS
+// ============================================
+
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  name     String?
+  nombre   String?
+  apellido String?
+  telefono String?
+  image    String?
+
+  // Auth
+  emailVerified DateTime?
+  googleId      String?   @unique
+  authProvider  String    @default("EMAIL") // GOOGLE, EMAIL
+  rol           String    @default("USER") // USER, ADMIN, SUPER_ADMIN
+
+  // Membresías
+  esAsociado       Boolean      @default(false)
+  fechaAsociado    DateTime?
+  organizacionId   String?
+  organizacion     Organizacion? @relation(fields: [organizacionId], references: [id])
+
+  // Gamificación
+  puntos Int @default(0)
+  nivel  Int @default(1)
+
+  // Preferencias
+  notificacionesEmail   Boolean @default(true)
+  notificacionesEventos Boolean @default(true)
+
+  // Relaciones
+  bonos          Bono[]
+  artistasVistos UsuarioArtista[]
+  notificaciones NotificacionUsuario[]
+  accounts       Account[]
+  sessions       Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Usuario")
+  @@index([email])
+  @@index([nivel])
+}
+
+model Evento {
+  id          String   @id @default(cuid())
+  nombre      String
+  slug        String   @unique
+  descripcion String   @db.Text
+  fecha       DateTime
+  horaInicio  String
+  ubicacion   String
+  capacidad   Int
+
+  // Precios
+  precioBase          Float
+  esFechaEspecial     Boolean @default(false)
+  motivoFechaEspecial String?
+  precioEspecial      Float?
+
+  // Media
+  imagenPrincipal String
+  galeria         String[]
+  videoYoutubeId  String?
+
+  // Finanzas - Distribución de ingresos
+  porcentajeArtista Float   @default(70) // % que va al artista/productor
+  porcentajeBayer   Float   @default(30) // % que va a La Bayer
+
+  // Finanzas - Tracking (calculados)
+  costoArtistas     Float   @default(0)
+  gastosProduccion  Float   @default(0)
+  totalRecaudado    Float   @default(0)
+  utilidad          Float   @default(0)
+  artistasCobrado   Boolean @default(false)
+  fechaPagoArtistas DateTime?
+  notas             String? @db.Text
+
+  // Estado
+  estado String @default("PROGRAMADO") // PROGRAMADO, PUBLICADO, FINALIZADO, CANCELADO
+
+  // Relaciones
+  artistas       EventoArtista[]
+  bonos          Bono[]
+  ventasExternas VentaExterna[]
+  notificaciones Notificacion[]
+  objetivos      EventoObjetivo[]
+  gastos         GastoEvento[]
+  promociones    Promocion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([fecha])
+  @@index([estado])
+}
+
+model Artista {
+  id        String  @id @default(cuid())
+  nombre    String
+  slug      String  @unique
+  bio       String  @db.Text
+  ciudad    String
+  provincia String?
+  pais      String  @default("Argentina")
+  esLocal   Boolean @default(false)
+
+  // Media
+  foto           String?
+  linkInstagram  String?
+  linkSpotify    String?
+  linkBandcamp   String?
+  linkWeb        String?
+  linkYoutube    String?
+
+  // Relaciones
+  eventos    EventoArtista[]
+  seguidores UsuarioArtista[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model EventoArtista {
+  id        String  @id @default(cuid())
+  eventoId  String
+  artistaId String
+  orden     Int     @default(1)
+  rol       String? // "Headliner", "Telonero", "Invitado"
+
+  evento  Evento  @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+  artista Artista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+
+  @@unique([eventoId, artistaId])
+  @@index([eventoId])
+  @@index([artistaId])
+}
+
+model Bono {
+  id     String @id @default(cuid())
+  codigo String @unique @default(cuid())
+  qrCode String @db.Text
+
+  eventoId String
+  evento   Evento @relation(fields: [eventoId], references: [id])
+
+  usuarioId String?
+  usuario   User? @relation(fields: [usuarioId], references: [id])
+
+  precioFinal         Float
+  descuentosAplicados Json  // JSON con breakdown de descuentos
+
+  estado String @default("PENDIENTE") // PENDIENTE, PAGADO, CANCELADO, UTILIZADO
+
+  fechaCompra      DateTime  @default(now())
+  fechaUtilizacion DateTime?
+
+  pagoId String?
+  pago   Pago?   @relation(fields: [pagoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([codigo])
+  @@index([eventoId])
+  @@index([usuarioId])
+  @@index([estado])
+}
+
+model VentaExterna {
+  id String @id @default(cuid())
+
+  eventoId String
+  evento   Evento @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+
+  // Datos del comprador
+  nombre    String
+  apellido  String
+  dni       String
+  telefono  String?
+  email     String?
+
+  // Datos de la venta
+  precio      Float
+  cantidad    Int @default(1)
+
+  // Quien vendió/cargó
+  vendidoPor String? // Nombre de quien vendió (artista, productora, etc)
+
+  // Control de ingreso
+  utilizado Boolean @default(false)
+  fechaUtilizacion DateTime?
+
+  notas String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventoId])
+  @@index([apellido])
+  @@index([dni])
+}
+
+model Pago {
+  id             String   @id @default(cuid())
+  mercadoPagoId  String   @unique
+  monto          Float
+  estado         String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  metodoPago     String?
+  metadata       Json?
+
+  usuarioId String?
+
+  // Relaciones
+  bonos Bono[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([mercadoPagoId])
+  @@index([estado])
+}
+
+// ============================================
+// DESCUENTOS Y PROMOCIONES
+// ============================================
+
+model Organizacion {
+  id                  String  @id @default(cuid())
+  nombre              String
+  tipo                String? // "Mutual", "Sindicato", "Cooperativa", etc.
+  descuentoPorcentaje Float
+  activo              Boolean @default(true)
+
+  // Relaciones
+  usuarios   User[]
+  descuentos Descuento[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Descuento {
+  id          String  @id @default(cuid())
+  nombre      String
+  descripcion String?
+
+  // Tipo de descuento: NIVEL, VECES_VISTO_ARTISTA, SOCIO, ORGANIZACION, MULTIPLES_COMPRAS_MES
+  tipo        String
+  porcentaje  Float
+
+  // Configuración
+  esAcumulable Boolean @default(true)
+  prioridad    Int     @default(0)
+  activo       Boolean @default(true)
+
+  // Requisitos por nivel
+  nivelMinimo   Int?
+
+  // Requisitos por artista (veces visto)
+  vecesVistoMinimo Int?
+
+  // Requisitos por múltiples compras
+  comprasMesMinimo Int? // Ej: 2 = si compró 2+ bonos en el mes
+
+  // Relación con organización (para mutuales)
+  organizacionId String?
+  organizacion   Organizacion? @relation(fields: [organizacionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Promocion {
+  id          String @id @default(cuid())
+  nombre      String
+  descripcion String @db.Text
+  tipo        String // 2x1, PORCENTAJE, MONTO_FIJO
+  valor       Float
+
+  esAcumulable Boolean @default(false)
+  prioridad    Int     @default(0)
+
+  // Requisitos
+  requiereAuth  Boolean @default(true)
+  puntosMinimos Int?
+  nivelMinimo   Int?
+
+  // Aplicación a evento específico
+  eventoId String?
+  evento   Evento? @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+
+  // Vigencia
+  fechaInicio DateTime
+  fechaFin    DateTime
+  activo      Boolean  @default(true)
+
+  // Código opcional para promociones con código
+  codigo String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventoId])
+  @@index([activo])
+  @@index([codigo])
+}
+
+// ============================================
+// TRACKING Y GAMIFICACIÓN
+// ============================================
+
+model UsuarioArtista {
+  id String @id @default(cuid())
+
+  usuarioId String
+  usuario   User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  artistaId String
+  artista   Artista @relation(fields: [artistaId], references: [id], onDelete: Cascade)
+
+  vecesVisto Int      @default(0)
+  primeraVez DateTime
+  ultimaVez  DateTime
+
+  esFavorito Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([usuarioId, artistaId])
+  @@index([usuarioId])
+  @@index([artistaId])
+}
+
+// ============================================
+// NOTIFICACIONES
+// ============================================
+
+model Notificacion {
+  id      String @id @default(cuid())
+  tipo    String // EVENTO, GENERAL, CANCELACION, CAMBIO, RECORDATORIO
+  titulo  String
+  mensaje String @db.Text
+
+  // Asociación
+  eventoId String?
+  evento   Evento? @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+
+  // Destinatarios
+  paraAsistentes Boolean @default(false)
+  paraTodos      Boolean @default(false)
+  paraAsociados  Boolean @default(false)
+  paraNivel      Int?
+
+  // Estado
+  enviadaPorEmail Boolean   @default(false)
+  fechaEnvioEmail DateTime?
+
+  creadaPor String // Admin user ID
+
+  // Relaciones
+  destinatarios NotificacionUsuario[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventoId])
+  @@index([createdAt])
+}
+
+model NotificacionUsuario {
+  id String @id @default(cuid())
+
+  notificacionId String
+  notificacion   Notificacion @relation(fields: [notificacionId], references: [id], onDelete: Cascade)
+
+  usuarioId String
+  usuario   User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  leida       Boolean   @default(false)
+  fechaLeida  DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([notificacionId, usuarioId])
+  @@index([usuarioId])
+  @@index([leida])
+}
+
+// ============================================
+// GESTIÓN FINANCIERA
+// ============================================
+
+model ObjetivoAmpliacion {
+  id          String  @id @default(cuid())
+  nombre      String
+  descripcion String  @db.Text
+  montoObjetivo Float
+  montoActual   Float   @default(0)
+  porcentaje    Float   @default(0)
+  cantidadPersonas Int @default(0) // Total de personas únicas que aportaron
+
+  fechaInicio   DateTime
+  fechaObjetivo DateTime?
+
+  estado    String @default("ACTIVO") // ACTIVO, COMPLETADO, PAUSADO
+  prioridad Int    @default(0)
+
+  icono  String?
+  imagen String?
+
+  activo Boolean @default(true)
+
+  // Relaciones
+  eventos EventoObjetivo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EventoObjetivo {
+  id String @id @default(cuid())
+
+  eventoId String
+  evento   Evento @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+
+  objetivoId String
+  objetivo   ObjetivoAmpliacion @relation(fields: [objetivoId], references: [id], onDelete: Cascade)
+
+  montoAsignado Float @default(0)
+  cantidadPersonas Int @default(0) // Cantidad de personas únicas de este evento
+
+  createdAt DateTime @default(now())
+
+  @@unique([eventoId, objetivoId])
+  @@index([eventoId])
+  @@index([objetivoId])
+}
+
+model GastoEvento {
+  id String @id @default(cuid())
+
+  eventoId String
+  evento   Evento @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+
+  concepto    String // "Sonidista", "Alquiler sillas", "Técnico de luces", etc.
+  descripcion String?
+  monto       Float
+
+  // Si el gasto es compartido con el artista
+  esCompartido      Boolean @default(false)
+  porcentajeArtista Float?  @default(50) // % que paga el artista (si es compartido)
+  porcentajeBayer   Float?  @default(50) // % que paga La Bayer (si es compartido)
+
+  // Metadata
+  proveedor String? // Nombre del proveedor/prestador
+  pagado    Boolean @default(false)
+  fechaPago DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventoId])
+}
+
+// ============================================
+// NEXT-AUTH MODELS
+// ============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

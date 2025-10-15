@@ -1,0 +1,18 @@
+# Scripts de desarrollo y utilidades
+scripts/
+*.log
+logs/
+
+# Archivos de configuración local
+.env.local
+.env*.local
+
+# Prisma Studio
+prisma/studio
+
+# Tests
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
