@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, Loader2, Target } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Target, Calendar, Users } from "lucide-react";
+import { differenceInDays } from "date-fns";
 
 interface Objetivo {
   id: string;
@@ -18,6 +19,8 @@ interface Objetivo {
   estado: string;
   activo: boolean;
   prioridad: number;
+  fechaObjetivo: Date | null;
+  cantidadPersonas: number;
 }
 
 interface ObjetivosListProps {
@@ -283,21 +286,46 @@ export function ObjetivosList({ objetivos }: ObjetivosListProps) {
               </div>
 
               {/* Progress Bar */}
-              <div className="mt-3">
+              <div className="mt-3 space-y-2">
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-600 dark:text-gray-300">
                     ${objetivo.montoActual.toLocaleString()} / $
                     {objetivo.montoObjetivo.toLocaleString()}
                   </span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    {objetivo.porcentaje.toFixed(1)}%
+                    {((objetivo.montoActual / objetivo.montoObjetivo) * 100).toFixed(1)}%
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all"
-                    style={{ width: `${Math.min(objetivo.porcentaje, 100)}%` }}
+                    style={{ width: `${Math.min((objetivo.montoActual / objetivo.montoObjetivo) * 100, 100)}%` }}
                   />
+                </div>
+                {/* Metadata */}
+                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-1">
+                  {objetivo.cantidadPersonas > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Users className="h-3.5 w-3.5" />
+                      <span>{objetivo.cantidadPersonas} personas</span>
+                    </div>
+                  )}
+                  {objetivo.fechaObjetivo && (() => {
+                    const diasFaltantes = differenceInDays(new Date(objetivo.fechaObjetivo), new Date());
+                    if (diasFaltantes >= 0) {
+                      return (
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3.5 w-3.5" />
+                          <span>
+                            {diasFaltantes === 0
+                              ? "Hoy"
+                              : `${diasFaltantes} día${diasFaltantes === 1 ? '' : 's'}`}
+                          </span>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
               </div>
             </div>

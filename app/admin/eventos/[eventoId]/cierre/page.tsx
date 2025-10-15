@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   AlertTriangle,
@@ -33,7 +35,9 @@ interface Bordereau {
   }>;
   ventas: {
     totalBonos: number;
-    totalRecaudado: number;
+    totalEntradas: number;
+    totalRecaudadoGeneral?: number;
+    totalRecaudadoBonos?: number;
     precioPromedio: number;
     porcentajeOcupacion: number;
   };
@@ -54,14 +58,16 @@ interface Bordereau {
       bayer: number;
     };
     ingresosNetos: number;
+    gastosCompartidosTotal: number;
     artista: {
+      porcentajeIngresos: number;
       montoIngresos: number;
-      gastosCompartidos: number;
+      ventasExternasYaCobradas?: number;
       montoFinal: number;
     };
     bayer: {
+      porcentajeIngresos: number;
       montoIngresos: number;
-      gastosCompartidos: number;
       gastosExclusivos: number;
       montoFinal: number;
     };
@@ -83,6 +89,7 @@ export default function CierrePage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [montoParaObjetivo, setMontoParaObjetivo] = useState<number>(0);
 
   useEffect(() => {
     fetchBordereau();
@@ -94,6 +101,8 @@ export default function CierrePage() {
       if (res.ok) {
         const data = await res.json();
         setBordereau(data);
+        // Inicializar el monto para objetivo con el total de La Bayer
+        setMontoParaObjetivo(data.distribucion?.bayer?.montoFinal || 0);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -105,6 +114,17 @@ export default function CierrePage() {
   const handleFinalizarEvento = async (asignarAObjetivo: boolean) => {
     if (!bordereau) return;
 
+    // Validar que el monto no sea mayor al disponible
+    if (asignarAObjetivo && montoParaObjetivo > bordereau.distribucion.bayer.montoFinal) {
+      alert(`El monto no puede ser mayor a $${bordereau.distribucion.bayer.montoFinal.toLocaleString("es-AR")}`);
+      return;
+    }
+
+    if (asignarAObjetivo && montoParaObjetivo < 0) {
+      alert("El monto debe ser positivo");
+      return;
+    }
+
     setProcessing(true);
     try {
       const res = await fetch(`/api/admin/eventos/${params.eventoId}/cierre`, {
@@ -113,6 +133,7 @@ export default function CierrePage() {
         body: JSON.stringify({
           asignarAObjetivo,
           montoBayer: bordereau.distribucion.bayer.montoFinal,
+          montoParaObjetivo: asignarAObjetivo ? montoParaObjetivo : 0,
         }),
       });
 
@@ -262,10 +283,10 @@ export default function CierrePage() {
               <div>
                 <p className="text-sm text-gray-500">Total Recaudado</p>
                 <p className="text-2xl font-bold">
-                  ${bordereau.ventas.totalRecaudado.toLocaleString("es-AR")}
+                  ${(bordereau.ventas.totalRecaudadoGeneral || bordereau.ventas.totalRecaudadoBonos || 0).toLocaleString("es-AR")}
                 </p>
                 <p className="text-xs text-gray-500">
-                  Promedio: ${bordereau.ventas.precioPromedio.toFixed(0)}
+                  Promedio: ${(bordereau.ventas.precioPromedio || 0).toFixed(0)}
                 </p>
               </div>
               <DollarSign className="h-8 w-8 text-green-600" />
@@ -297,12 +318,22 @@ export default function CierrePage() {
           <CardTitle className="text-2xl">Distribución Final</CardTitle>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
-          {/* Ingresos Netos */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <p className="text-sm text-gray-500 mb-1">Ingresos Netos</p>
-            <p className="text-3xl font-bold">
-              ${bordereau.distribucion.ingresosNetos.toLocaleString("es-AR")}
-            </p>
+          {/* Cálculo de Ingresos Netos */}
+          <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">Total recaudado (bonos)</span>
+              <span className="font-medium">${(bordereau.ventas.totalRecaudadoBonos || 0).toLocaleString("es-AR")}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm text-red-600">
+              <span>Gastos compartidos</span>
+              <span className="font-medium">-${bordereau.distribucion.gastosCompartidosTotal.toLocaleString("es-AR")}</span>
+            </div>
+            <div className="pt-2 border-t border-gray-300 dark:border-gray-600">
+              <div className="flex items-center justify-between">
+                <span className="font-bold">Ingresos netos a distribuir</span>
+                <span className="text-2xl font-bold">${bordereau.distribucion.ingresosNetos.toLocaleString("es-AR")}</span>
+              </div>
+            </div>
           </div>
 
           {/* Split Artista/Bayer */}
@@ -318,28 +349,33 @@ export default function CierrePage() {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Ingresos</span>
+                  <span className="text-gray-600">Monto distribuido ({bordereau.distribucion.porcentajes.artista}%)</span>
                   <span className="font-medium">
                     ${bordereau.distribucion.artista.montoIngresos.toLocaleString("es-AR")}
                   </span>
                 </div>
 
-                {bordereau.distribucion.artista.gastosCompartidos > 0 && (
-                  <div className="flex items-center justify-between text-sm text-red-600">
-                    <span>Gastos compartidos</span>
-                    <span className="font-medium">
-                      -${bordereau.distribucion.artista.gastosCompartidos.toLocaleString("es-AR")}
+                {bordereau.distribucion.artista.ventasExternasYaCobradas && bordereau.distribucion.artista.ventasExternasYaCobradas > 0 && (
+                  <div className="flex items-center justify-between text-sm bg-red-50 dark:bg-red-900/20 p-2 rounded">
+                    <span className="text-red-700 dark:text-red-300">Ventas externas (ya cobradas)</span>
+                    <span className="font-medium text-red-700 dark:text-red-300">
+                      -${bordereau.distribucion.artista.ventasExternasYaCobradas.toLocaleString("es-AR")}
                     </span>
                   </div>
                 )}
 
                 <div className="pt-3 border-t-2 border-green-200 dark:border-green-700">
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold">Monto Final</span>
+                    <span className="text-lg font-bold">Monto Final a Pagar</span>
                     <span className="text-2xl font-bold text-green-600">
                       ${bordereau.distribucion.artista.montoFinal.toLocaleString("es-AR")}
                     </span>
                   </div>
+                  {bordereau.distribucion.artista.ventasExternasYaCobradas && bordereau.distribucion.artista.ventasExternasYaCobradas > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      (Descontados ${bordereau.distribucion.artista.ventasExternasYaCobradas.toLocaleString("es-AR")} de ventas externas ya cobradas)
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -355,20 +391,11 @@ export default function CierrePage() {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Ingresos</span>
+                  <span className="text-gray-600">Monto distribuido ({bordereau.distribucion.porcentajes.bayer}%)</span>
                   <span className="font-medium">
                     ${bordereau.distribucion.bayer.montoIngresos.toLocaleString("es-AR")}
                   </span>
                 </div>
-
-                {bordereau.distribucion.bayer.gastosCompartidos > 0 && (
-                  <div className="flex items-center justify-between text-sm text-red-600">
-                    <span>Gastos compartidos</span>
-                    <span className="font-medium">
-                      -${bordereau.distribucion.bayer.gastosCompartidos.toLocaleString("es-AR")}
-                    </span>
-                  </div>
-                )}
 
                 {bordereau.distribucion.bayer.gastosExclusivos > 0 && (
                   <div className="flex items-center justify-between text-sm text-red-600">
@@ -474,16 +501,39 @@ export default function CierrePage() {
                 </p>
 
                 {bordereau.objetivo && bordereau.objetivo.activo ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="montoObjetivo" className="text-sm font-medium">
+                        ¿Cuánto querés asignar al objetivo?
+                      </Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                        <Input
+                          id="montoObjetivo"
+                          type="number"
+                          min="0"
+                          max={bordereau.distribucion.bayer.montoFinal}
+                          step="0.01"
+                          value={montoParaObjetivo}
+                          onChange={(e) => setMontoParaObjetivo(parseFloat(e.target.value) || 0)}
+                          className="pl-7"
+                          disabled={processing}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Monto disponible: ${bordereau.distribucion.bayer.montoFinal.toLocaleString("es-AR")}
+                      </p>
+                    </div>
+
                     <Button
                       onClick={() => handleFinalizarEvento(true)}
                       size="lg"
                       className="w-full bg-purple-600 hover:bg-purple-700"
-                      disabled={processing}
+                      disabled={processing || montoParaObjetivo <= 0}
                     >
                       {processing && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                       <Target className="h-4 w-4 mr-2" />
-                      Finalizar y Asignar ${bordereau.distribucion.bayer.montoFinal.toLocaleString("es-AR")} al Objetivo
+                      Finalizar y Asignar ${montoParaObjetivo.toLocaleString("es-AR")} al Objetivo
                     </Button>
                     <Button
                       onClick={() => handleFinalizarEvento(false)}

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Target, TrendingUp, Users, Calendar } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
 
 interface ObjetivoColectivoProps {
@@ -31,8 +31,13 @@ export function ObjetivoColectivo({
   contributores,
   compact = false,
 }: ObjetivoColectivoProps) {
+  // Calcular porcentaje dinámicamente
+  const porcentajeCalculado = (montoActual / montoObjetivo) * 100;
   const montoFaltante = montoObjetivo - montoActual;
-  const estaCompletado = porcentaje >= 100;
+  const estaCompletado = porcentajeCalculado >= 100;
+
+  // Calcular días faltantes
+  const diasFaltantes = fechaObjetivo ? differenceInDays(fechaObjetivo, new Date()) : null;
 
   if (compact) {
     return (
@@ -58,10 +63,10 @@ export function ObjetivoColectivo({
                     ${montoActual.toLocaleString()} de ${montoObjetivo.toLocaleString()}
                   </span>
                   <span className="font-bold text-green-600">
-                    {porcentaje.toFixed(0)}%
+                    {porcentajeCalculado.toFixed(0)}%
                   </span>
                 </div>
-                <Progress value={porcentaje} className="h-2" />
+                <Progress value={porcentajeCalculado} className="h-2" />
               </div>
             </div>
           </div>
@@ -117,12 +122,12 @@ export function ObjetivoColectivo({
             </div>
             <div className="text-right">
               <p className="text-3xl font-bold text-green-700 dark:text-green-500">
-                {porcentaje.toFixed(0)}%
+                {porcentajeCalculado.toFixed(0)}%
               </p>
             </div>
           </div>
 
-          <Progress value={porcentaje} className="h-3" />
+          <Progress value={porcentajeCalculado} className="h-3" />
 
           {!estaCompletado && (
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -148,9 +153,15 @@ export function ObjetivoColectivo({
               <Calendar className="h-4 w-4 text-green-600" />
               <div>
                 <p className="text-sm font-medium">
-                  {format(fechaObjetivo, "MMM yyyy", { locale: es })}
+                  {diasFaltantes !== null && diasFaltantes > 0
+                    ? `${diasFaltantes} días`
+                    : diasFaltantes === 0
+                    ? "Hoy"
+                    : format(fechaObjetivo, "MMM yyyy", { locale: es })}
                 </p>
-                <p className="text-xs text-gray-500">meta</p>
+                <p className="text-xs text-gray-500">
+                  {diasFaltantes !== null && diasFaltantes >= 0 ? "para lograrlo" : "meta"}
+                </p>
               </div>
             </div>
           )}

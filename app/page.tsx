@@ -4,9 +4,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { EventoCard } from "@/components/evento-card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Users, Heart } from "lucide-react";
+import { ArrowRight, Target, Users, Heart, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { calcularDescuentos } from "@/lib/descuentos";
+import { differenceInDays } from "date-fns";
 
 export const revalidate = 60; // Revalidar cada 60 segundos
 
@@ -84,6 +85,11 @@ export default async function Home() {
   const objetivo = await getObjetivoActivo();
   const session = await getServerSession(authOptions);
 
+  // Calcular días faltantes para el objetivo
+  const diasFaltantes = objetivo?.fechaObjetivo
+    ? differenceInDays(new Date(objetivo.fechaObjetivo), new Date())
+    : null;
+
   // Calcular descuentos para cada evento si hay sesión
   const eventosConDescuentos = await Promise.all(
     eventos.map(async (evento) => {
@@ -153,19 +159,31 @@ export default async function Home() {
                     <div className="h-2.5 md:h-3 bg-muted rounded-full overflow-hidden">
                       <div
                         className="h-full bg-primary transition-all"
-                        style={{ width: `${Math.min(objetivo.porcentaje, 100)}%` }}
+                        style={{ width: `${Math.min((objetivo.montoActual / objetivo.montoObjetivo) * 100, 100)}%` }}
                       />
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        {objetivo.porcentaje.toFixed(1)}% completado
+                        {((objetivo.montoActual / objetivo.montoObjetivo) * 100).toFixed(1)}% completado
                       </p>
-                      {objetivo.contributores > 0 && (
-                        <div className="flex items-center gap-1 text-xs md:text-sm text-muted-foreground">
-                          <Users className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                          <span>{objetivo.contributores} personas aportando</span>
-                        </div>
-                      )}
+                      <div className="flex flex-wrap items-center gap-3">
+                        {objetivo.contributores > 0 && (
+                          <div className="flex items-center gap-1 text-xs md:text-sm text-muted-foreground">
+                            <Users className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                            <span>{objetivo.contributores} personas</span>
+                          </div>
+                        )}
+                        {diasFaltantes !== null && diasFaltantes >= 0 && (
+                          <div className="flex items-center gap-1 text-xs md:text-sm text-muted-foreground">
+                            <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                            <span>
+                              {diasFaltantes === 0
+                                ? "Hoy es el día"
+                                : `${diasFaltantes} día${diasFaltantes === 1 ? '' : 's'}`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-start gap-2 mt-3 md:mt-4 p-2.5 md:p-3 bg-primary/5 rounded-lg">
