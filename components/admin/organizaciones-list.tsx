@@ -112,17 +112,17 @@ export function OrganizacionesList({ organizaciones: initialOrganizaciones }: Or
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {!showForm && (
-        <Button onClick={() => setShowForm(true)}>
+        <Button onClick={() => setShowForm(true)} className="w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
           Nueva Organización
         </Button>
       )}
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
-          <div className="grid gap-4 md:grid-cols-2">
+        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4 p-3 md:p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
+          <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="nombre">Nombre *</Label>
               <Input
@@ -192,7 +192,7 @@ export function OrganizacionesList({ organizaciones: initialOrganizaciones }: Or
         </form>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-2 md:space-y-3">
         {organizaciones.length === 0 ? (
           <p className="text-center text-gray-500 dark:text-gray-400 py-8">
             No hay organizaciones registradas
@@ -201,39 +201,43 @@ export function OrganizacionesList({ organizaciones: initialOrganizaciones }: Or
           organizaciones.map((org) => (
             <div
               key={org.id}
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="flex flex-col sm:flex-row sm:items-start gap-3 p-3 md:p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <h3 className="font-medium text-gray-900 dark:text-white">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-2 mb-2">
+                  <h3 className="font-medium text-sm md:text-base text-gray-900 dark:text-white truncate">
                     {org.nombre}
                   </h3>
-                  {org.tipo && (
-                    <Badge variant="secondary">{org.tipo}</Badge>
-                  )}
-                  {!org.activo && (
-                    <Badge variant="destructive">Inactivo</Badge>
-                  )}
+                  <div className="flex flex-wrap gap-1.5">
+                    {org.tipo && (
+                      <Badge variant="secondary">{org.tipo}</Badge>
+                    )}
+                    {!org.activo && (
+                      <Badge variant="destructive">Inactivo</Badge>
+                    )}
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                   Descuento: {org.descuentoPorcentaje}% • {org._count.usuarios} usuarios
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleEdit(org)}
+                  className="flex-1 sm:flex-none"
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleDelete(org.id)}
                   disabled={org._count.usuarios > 0}
+                  className="flex-1 sm:flex-none"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
             </div>
