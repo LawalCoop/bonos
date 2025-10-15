@@ -257,18 +257,18 @@ export default function DescuentosPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
             Gestión de Descuentos
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">
             Configura las reglas de descuentos del sistema
           </p>
         </div>
         {!creando && !editando && (
-          <Button onClick={handleCrear}>
+          <Button onClick={handleCrear} className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Nuevo Descuento
           </Button>
@@ -278,13 +278,13 @@ export default function DescuentosPage() {
       {/* Formulario Crear/Editar */}
       {(creando || editando) && (
         <Card>
-          <CardHeader>
-            <CardTitle>
+          <CardHeader className="p-3 md:p-6">
+            <CardTitle className="text-base md:text-lg">
               {editando ? "Editar Descuento" : "Crear Nuevo Descuento"}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
+          <CardContent className="p-3 md:p-6 pt-0">
+            <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2">
               <div>
                 <Label htmlFor="nombre">Nombre *</Label>
                 <Input
@@ -477,8 +477,8 @@ export default function DescuentosPage() {
               </div>
             </div>
 
-            <div className="flex gap-2 mt-6">
-              <Button onClick={handleGuardar} disabled={guardando}>
+            <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-6">
+              <Button onClick={handleGuardar} disabled={guardando} className="w-full sm:w-auto">
                 {guardando ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -486,7 +486,7 @@ export default function DescuentosPage() {
                 )}
                 Guardar
               </Button>
-              <Button variant="outline" onClick={handleCancelar}>
+              <Button variant="outline" onClick={handleCancelar} className="w-full sm:w-auto">
                 <X className="mr-2 h-4 w-4" />
                 Cancelar
               </Button>
@@ -497,51 +497,53 @@ export default function DescuentosPage() {
 
       {/* Lista de Descuentos */}
       <Card>
-        <CardHeader>
-          <CardTitle>Descuentos Configurados ({descuentos.length})</CardTitle>
+        <CardHeader className="p-3 md:p-6">
+          <CardTitle className="text-base md:text-lg">Descuentos Configurados ({descuentos.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 md:p-6 pt-0">
           {descuentos.length === 0 ? (
-            <div className="text-center py-12">
-              <Percent className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              <p className="text-gray-500 dark:text-gray-400">
+            <div className="text-center py-8 md:py-12">
+              <Percent className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 md:mb-4 text-gray-400" />
+              <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">
                 No hay descuentos configurados todavía
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {descuentos.map((descuento) => (
                 <div
                   key={descuento.id}
-                  className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="p-3 md:p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-medium text-gray-900 dark:text-white">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-2 mb-2">
+                        <h3 className="font-medium text-sm md:text-base text-gray-900 dark:text-white truncate">
                           {descuento.nombre}
                         </h3>
-                        <Badge className={getTipoBadgeColor(descuento.tipo)}>
-                          {getTipoLabel(descuento.tipo)}
-                        </Badge>
-                        <Badge variant="outline">
-                          {descuento.porcentaje}%
-                        </Badge>
-                        {descuento.esAcumulable && (
-                          <Badge variant="secondary">Acumulable</Badge>
-                        )}
-                        {!descuento.activo && (
-                          <Badge variant="destructive">Inactivo</Badge>
-                        )}
+                        <div className="flex flex-wrap gap-1.5">
+                          <Badge className={getTipoBadgeColor(descuento.tipo)}>
+                            {getTipoLabel(descuento.tipo)}
+                          </Badge>
+                          <Badge variant="outline">
+                            {descuento.porcentaje}%
+                          </Badge>
+                          {descuento.esAcumulable && (
+                            <Badge variant="secondary">Acumulable</Badge>
+                          )}
+                          {!descuento.activo && (
+                            <Badge variant="destructive">Inactivo</Badge>
+                          )}
+                        </div>
                       </div>
 
                       {descuento.descripcion && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mb-2">
                           {descuento.descripcion}
                         </p>
                       )}
 
-                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-600 dark:text-gray-400">
                         <span>Prioridad: {descuento.prioridad}</span>
                         {descuento.nivelMinimo && (
                           <span>Nivel mín: {descuento.nivelMinimo}</span>
@@ -557,17 +559,18 @@ export default function DescuentosPage() {
                           </span>
                         )}
                         {descuento.organizacion && (
-                          <span>Org: {descuento.organizacion.nombre}</span>
+                          <span className="truncate">Org: {descuento.organizacion.nombre}</span>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 pt-3 border-t">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleToggle(descuento.id)}
                         title={descuento.activo ? "Desactivar" : "Activar"}
+                        className="flex-1 sm:flex-none"
                       >
                         {descuento.activo ? (
                           <Power className="h-4 w-4 text-green-600" />
@@ -579,15 +582,19 @@ export default function DescuentosPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditar(descuento)}
+                        className="flex-1 sm:flex-none"
                       >
-                        <Edit2 className="h-4 w-4" />
+                        <Edit2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-1" />
+                        <span className="hidden sm:inline">Editar</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleEliminar(descuento.id)}
+                        className="flex-1 sm:flex-none"
                       >
-                        <Trash2 className="h-4 w-4 text-red-600" />
+                        <Trash2 className="h-3 w-3 md:h-4 md:w-4 text-red-600 sm:mr-1" />
+                        <span className="hidden sm:inline">Eliminar</span>
                       </Button>
                     </div>
                   </div>

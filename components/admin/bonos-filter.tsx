@@ -52,23 +52,24 @@ export function BonosFilter({ defaultSearch, defaultEstado }: BonosFilterProps) 
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-3 md:space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <div className="space-y-2">
-          <Label htmlFor="search">Buscar</Label>
+          <Label htmlFor="search" className="text-sm">Buscar</Label>
           <Input
             id="search"
-            placeholder="Código, email, nombre de usuario o evento..."
+            placeholder="Código, email, nombre..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyPress={handleKeyPress}
+            className="text-sm"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="estado">Estado</Label>
+          <Label htmlFor="estado" className="text-sm">Estado</Label>
           <Select value={estado} onValueChange={setEstado}>
-            <SelectTrigger id="estado">
+            <SelectTrigger id="estado" className="text-sm">
               <SelectValue placeholder="Todos los estados" />
             </SelectTrigger>
             <SelectContent>
@@ -82,12 +83,12 @@ export function BonosFilter({ defaultSearch, defaultEstado }: BonosFilterProps) 
         </div>
       </div>
 
-      <div className="flex gap-2">
-        <Button onClick={handleApplyFilters}>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Button onClick={handleApplyFilters} className="w-full sm:w-auto">
           Aplicar Filtros
         </Button>
         {(search || (estado && estado !== "TODOS")) && (
-          <Button onClick={handleClearFilters} variant="outline">
+          <Button onClick={handleClearFilters} variant="outline" className="w-full sm:w-auto">
             <X className="h-4 w-4 mr-2" />
             Limpiar
           </Button>

@@ -73,37 +73,35 @@ export default async function EditEventoPage({
   const promocionesActivas = evento.promociones?.filter((p) => p.activo) || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
           Editar Evento
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">{evento.nombre}</p>
+        <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">{evento.nombre}</p>
       </div>
 
       {/* Promociones Section */}
       {evento.promociones && evento.promociones.length > 0 && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Percent className="h-5 w-5" />
+          <CardHeader className="p-3 md:p-6">
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+              <Percent className="h-4 w-4 md:h-5 md:w-5" />
               Promociones del Evento
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+          <CardContent className="p-3 md:p-6 pt-0">
+            <div className="space-y-2 md:space-y-3">
               {evento.promociones.map((promo) => (
                 <div
                   key={promo.id}
-                  className="flex items-center justify-between p-3 border rounded-lg"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 p-2 md:p-3 border rounded-lg"
                 >
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <p className="font-medium">{promo.nombre}</p>
-                      <p className="text-sm text-gray-500">{promo.descripcion}</p>
-                    </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm md:text-base truncate">{promo.nombre}</p>
+                    <p className="text-xs md:text-sm text-gray-500 truncate">{promo.descripcion}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     {promo.tipo === "2x1" && (
                       <Badge className="bg-purple-600">2x1</Badge>
                     )}
@@ -124,7 +122,7 @@ export default async function EditEventoPage({
               <div className="pt-2">
                 <Link
                   href="/admin/promociones"
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-xs md:text-sm text-blue-600 hover:underline"
                 >
                   Ver todas las promociones →
                 </Link>

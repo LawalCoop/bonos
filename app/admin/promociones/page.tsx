@@ -52,18 +52,18 @@ export default async function PromocionesPage() {
   const globalCount = promociones.filter((p) => !p.eventoId).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
             Promociones
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">
             Gestiona descuentos temporales y ofertas especiales
           </p>
         </div>
-        <Link href="/admin/promociones/nueva">
-          <Button>
+        <Link href="/admin/promociones/nueva" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Nueva Promoción
           </Button>
@@ -71,42 +71,42 @@ export default async function PromocionesPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-3">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 md:p-6 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
               Total Promociones
             </CardTitle>
-            <Percent className="h-4 w-4 text-gray-600" />
+            <Percent className="h-3.5 w-3.5 md:h-4 md:w-4 text-gray-600 flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{promociones.length}</div>
+          <CardContent className="p-3 md:p-6 pt-0">
+            <div className="text-xl md:text-2xl font-bold">{promociones.length}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 md:p-6 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
               Activas
             </CardTitle>
-            <Percent className="h-4 w-4 text-green-600" />
+            <Percent className="h-3.5 w-3.5 md:h-4 md:w-4 text-green-600 flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+          <CardContent className="p-3 md:p-6 pt-0">
+            <div className="text-xl md:text-2xl font-bold text-green-600">
               {activeCount}
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 md:p-6 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400">
               Globales
             </CardTitle>
-            <Percent className="h-4 w-4 text-blue-600" />
+            <Percent className="h-3.5 w-3.5 md:h-4 md:w-4 text-blue-600 flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
+          <CardContent className="p-3 md:p-6 pt-0">
+            <div className="text-xl md:text-2xl font-bold text-blue-600">
               {globalCount}
             </div>
           </CardContent>
@@ -115,10 +115,10 @@ export default async function PromocionesPage() {
 
       {/* Promociones Table */}
       <Card>
-        <CardHeader>
-          <CardTitle>Lista de Promociones</CardTitle>
+        <CardHeader className="p-3 md:p-6">
+          <CardTitle className="text-base md:text-lg">Lista de Promociones</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 md:p-6 pt-0">
           <PromocionesTable promociones={promociones} eventos={eventos} />
         </CardContent>
       </Card>
