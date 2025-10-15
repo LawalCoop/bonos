@@ -39,6 +39,10 @@ export function PrecioDesglose({
 }: PrecioDesgloseProps) {
   const [open, setOpen] = useState(false);
 
+  console.log('PrecioDesglose - tipoDescuento:', tipoDescuento);
+  console.log('PrecioDesglose - totalDescuentoPorcentaje:', totalDescuentoPorcentaje);
+  console.log('PrecioDesglose - descuentos:', descuentos);
+
   const ahorro = precioBase - precioFinal;
 
   return (
@@ -48,16 +52,16 @@ export function PrecioDesglose({
         <CollapsibleTrigger className="w-full">
           <div className="flex items-start justify-between cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors">
             <div className="text-left">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-2 mb-1 min-h-[24px]">
                 {tipoDescuento === "promocion" && promocion && (
-                  <Badge className="bg-green-600">
+                  <Badge className="bg-green-600 text-white">
                     {promocion.tipo === "2x1" && "2x1"}
                     {promocion.tipo === "PORCENTAJE" && `${promocion.valor}% OFF`}
                     {promocion.tipo === "MONTO_FIJO" && `$${promocion.valor} OFF`}
                   </Badge>
                 )}
-                {tipoDescuento === "descuentos" && (
-                  <Badge className="bg-blue-600">
+                {tipoDescuento === "descuentos" && totalDescuentoPorcentaje > 0 && (
+                  <Badge className="bg-blue-600 text-white">
                     {totalDescuentoPorcentaje}% OFF
                   </Badge>
                 )}

@@ -324,8 +324,6 @@ export default async function EventoPage({ params }: EventoPageProps) {
                 }
                 porcentajeArtista={evento.porcentajeArtista}
                 porcentajeBayer={evento.porcentajeBayer}
-                nombreObjetivo={objetivoActivo?.nombre}
-                tieneObjetivoActivo={!!objetivoActivo && objetivoActivo.activo && !!eventoObjetivo}
               />
             </div>
 
@@ -404,30 +402,16 @@ export default async function EventoPage({ params }: EventoPageProps) {
 
               {session?.user?.id ? (
                 descuentosUsuario && descuentosUsuario.length > 0 ? (
-                  usarPromocion ? (
-                    // Usuario tiene descuentos pero la promoción es mejor
-                    <DescuentosGamificado
-                      descuentosActuales={descuentosUsuario}
-                      descuentosPotenciales={descuentosPotenciales}
-                      totalDescuentoActual={totalDescuentoPorcentaje}
-                      usuarioNivel={session.user.nivel}
-                      usuarioPuntos={session.user.puntos}
-                      precioBase={precio}
-                      precioConPromocion={undefined}
-                      mostrarDesglose={false}
-                    />
-                  ) : (
-                    // Descuentos del usuario son mejores o no hay promoción
-                    <DescuentosGamificado
-                      descuentosActuales={descuentosUsuario}
-                      descuentosPotenciales={descuentosPotenciales}
-                      totalDescuentoActual={totalDescuentoPorcentaje}
-                      usuarioNivel={session.user.nivel}
-                      usuarioPuntos={session.user.puntos}
-                      precioBase={precio}
-                      precioConPromocion={undefined}
-                    />
-                  )
+                  // Usuario tiene descuentos - siempre mostrar el desglose
+                  <DescuentosGamificado
+                    descuentosActuales={descuentosUsuario}
+                    descuentosPotenciales={descuentosPotenciales}
+                    totalDescuentoActual={totalDescuentoPorcentaje}
+                    usuarioNivel={session.user.nivel}
+                    usuarioPuntos={session.user.puntos}
+                    precioBase={precio}
+                    precioConPromocion={usarPromocion && precioConPromocion ? precioConPromocion : undefined}
+                  />
                 ) : (
                   <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
                     <h3 className="font-bold">Desbloquea descuentos:</h3>

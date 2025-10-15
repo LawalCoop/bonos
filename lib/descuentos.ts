@@ -186,6 +186,10 @@ export async function calcularDescuentos(
   // Para NIVEL: solo aplicar el descuento del nivel exacto del usuario
   let nivelAplicado = false;
 
+  // Separar descuentos en acumulables y no acumulables
+  const descuentosAcumulables: DescuentoAplicado[] = [];
+  const descuentosNoAcumulables: DescuentoAplicado[] = [];
+
   // Procesar cada regla de descuento
   for (const regla of reglasDescuento) {
     let aplica = false;
@@ -252,28 +256,44 @@ export async function calcularDescuentos(
         break;
     }
 
-    // Si la regla aplica, agregar el descuento
+    // Si la regla aplica, agregar al grupo correspondiente
     if (aplica) {
       const porcentaje = regla.porcentaje;
       const monto = (precioBase * porcentaje) / 100;
 
-      descuentos.push({
+      const descuento: DescuentoAplicado = {
         tipo: regla.tipo,
         nombre: nombreDescuento,
         porcentaje,
         monto,
-      });
+      };
 
-      // Solo sumar al total si es acumulable
       if (regla.esAcumulable) {
-        totalDescuentoPorcentaje += porcentaje;
+        descuentosAcumulables.push(descuento);
       } else {
-        // Si no es acumulable, aplicar solo este descuento y terminar
-        totalDescuentoPorcentaje = porcentaje;
-        break;
+        descuentosNoAcumulables.push(descuento);
       }
     }
   }
+
+  // Lógica de aplicación de descuentos
+  if (descuentosNoAcumulables.length > 0) {
+    // Si hay descuentos no acumulables, elegir el de mayor porcentaje
+    console.log('Descuentos no acumulables encontrados:', descuentosNoAcumulables);
+    const mejorDescuento = descuentosNoAcumulables.reduce((mejor, actual) =>
+      actual.porcentaje > mejor.porcentaje ? actual : mejor
+    );
+    console.log('Mejor descuento seleccionado:', mejorDescuento);
+    descuentos.push(mejorDescuento);
+    totalDescuentoPorcentaje = mejorDescuento.porcentaje;
+  } else if (descuentosAcumulables.length > 0) {
+    // Si solo hay acumulables, sumarlos todos
+    descuentos.push(...descuentosAcumulables);
+    totalDescuentoPorcentaje = descuentosAcumulables.reduce((sum, d) => sum + d.porcentaje, 0);
+  }
+
+  console.log('Descuentos finales aplicados:', descuentos);
+  console.log('Total descuento porcentaje:', totalDescuentoPorcentaje);
 
   // Comparar promoción vs descuentos del usuario
   // Limitamos el descuento total del usuario a 50% máximo

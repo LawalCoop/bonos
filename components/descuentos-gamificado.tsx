@@ -105,16 +105,23 @@ function GrupoDescuento({
   color,
   descuentos,
   potenciales,
+  esAcumulable = true,
 }: {
   titulo: string;
   icon: any;
   color: string;
   descuentos: Descuento[];
   potenciales: DescuentoPotencial[];
+  esAcumulable?: boolean;
 }) {
   if (descuentos.length === 0 && potenciales.length === 0) return null;
 
   const totalPorcentaje = descuentos.reduce((sum, d) => sum + d.porcentaje, 0);
+
+  // Si hay múltiples descuentos y no son acumulables, identificar el mayor
+  const mejorDescuento = descuentos.length > 1 && !esAcumulable
+    ? descuentos.reduce((mejor, actual) => actual.porcentaje > mejor.porcentaje ? actual : mejor)
+    : null;
 
   return (
     <div className="space-y-2">
@@ -125,24 +132,67 @@ function GrupoDescuento({
 
       {/* Descuentos Activos */}
       {descuentos.length > 0 && (
-        <div className={`p-3 rounded-lg border-2 ${color.replace("text-", "border-")} bg-opacity-10`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className={`h-5 w-5 ${color}`} />
-              <div>
-                {descuentos.length === 1 ? (
-                  <p className="font-medium text-sm">{descuentos[0].nombre}</p>
-                ) : (
-                  <p className="font-medium text-sm">
-                    {descuentos.length} descuentos activos
-                  </p>
-                )}
+        <div className={`p-3 rounded-lg border-2 ${color.replace("text-", "border-")} bg-opacity-10 space-y-2`}>
+          {/* Si hay un solo descuento o son acumulables, mostrar normalmente */}
+          {(descuentos.length === 1 || esAcumulable) ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className={`h-5 w-5 ${color}`} />
+                <div>
+                  {descuentos.length === 1 ? (
+                    <p className="font-medium text-sm">{descuentos[0].nombre}</p>
+                  ) : (
+                    <p className="font-medium text-sm">
+                      {descuentos.length} descuentos activos
+                    </p>
+                  )}
+                </div>
               </div>
+              <Badge className="bg-green-600 text-white border-transparent font-semibold">
+                -{totalPorcentaje}%
+              </Badge>
             </div>
-            <Badge className={`${color.replace("text-", "bg-")} text-white`}>
-              -{totalPorcentaje}%
-            </Badge>
-          </div>
+          ) : (
+            /* Si hay múltiples y no son acumulables, mostrar todos indicando cuál gana */
+            <>
+              <div className="text-xs text-muted-foreground mb-2">
+                Solo se aplica el descuento mayor:
+              </div>
+              {descuentos.map((desc, idx) => {
+                const esElMejor = mejorDescuento?.nombre === desc.nombre;
+                return (
+                  <div
+                    key={idx}
+                    className={`flex items-center justify-between p-2 rounded ${
+                      esElMejor
+                        ? 'bg-green-50 dark:bg-green-950/30 border border-green-300 dark:border-green-700'
+                        : 'opacity-50 bg-gray-50 dark:bg-gray-900/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {esElMejor ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <div className="h-4 w-4 rounded-full border-2 border-gray-400" />
+                      )}
+                      <p className={`text-sm ${esElMejor ? 'font-semibold' : ''}`}>
+                        {desc.nombre}
+                      </p>
+                    </div>
+                    <Badge
+                      className={`border-transparent font-semibold ${
+                        esElMejor
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-400 text-white'
+                      }`}
+                    >
+                      -{desc.porcentaje}%
+                    </Badge>
+                  </div>
+                );
+              })}
+            </>
+          )}
         </div>
       )}
 
@@ -185,6 +235,8 @@ export function DescuentosGamificado({
   precioConPromocion,
   mostrarDesglose = true,
 }: DescuentoGamificadoProps) {
+  console.log('DescuentosGamificado - descuentosActuales:', descuentosActuales);
+
   const gruposActuales = agruparDescuentos(descuentosActuales);
   const gruposPotenciales = agruparPotenciales(descuentosPotenciales);
 
@@ -458,40 +510,44 @@ export function DescuentosGamificado({
         {/* Otros descuentos después del nivel - Solo mostrar si mostrarDesglose es true */}
         {mostrarDesglose && (
           <>
-        {/* Socio */}
+        {/* Socio - No acumulable (solo uno puede ser socio) */}
         <GrupoDescuento
           titulo="Socie de La Bayer"
           icon={Heart}
           color="text-red-500"
           descuentos={gruposActuales.socio}
           potenciales={gruposPotenciales.socio}
+          esAcumulable={false}
         />
 
-        {/* Organizaciones */}
+        {/* Organizaciones - No acumulable (solo puede pertenecer a una organización) */}
         <GrupoDescuento
           titulo="Mutuales & Organizaciones"
           icon={Users}
           color="text-blue-500"
           descuentos={gruposActuales.organizacion}
           potenciales={gruposPotenciales.organizacion}
+          esAcumulable={false}
         />
 
-        {/* Fan de Artistas */}
+        {/* Fan de Artistas - Acumulable (puede ser fan de varios artistas) */}
         <GrupoDescuento
           titulo="Fan de Artistas"
           icon={Star}
           color="text-purple-500"
           descuentos={gruposActuales.fan}
           potenciales={gruposPotenciales.fan}
+          esAcumulable={true}
         />
 
-        {/* Múltiples Compras */}
+        {/* Múltiples Compras - No acumulable (solo un descuento por compras) */}
         <GrupoDescuento
           titulo="Compras Frecuentes"
           icon={ShoppingCart}
           color="text-orange-500"
           descuentos={gruposActuales.multiples}
           potenciales={gruposPotenciales.multiples}
+          esAcumulable={false}
         />
 
         {/* Desglose de precio con descuentos */}
