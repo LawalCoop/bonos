@@ -101,26 +101,26 @@ export default async function Home() {
   );
 
   return (
-    <div className="flex flex-col gap-16 py-12">
+    <div className="flex flex-col gap-8 md:gap-16 py-6 md:py-12">
       {/* Hero Section */}
-      <section className="container">
-        <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+      <section className="container px-4">
+        <div className="flex flex-col items-center text-center space-y-4 md:space-y-6 max-w-3xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight">
             Bienvenide a{" "}
             <span className="text-primary">La Bayer Experimental</span>
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-base md:text-xl text-muted-foreground px-4">
             Espacio cultural de la Biblioteca Popular Osvaldo Bayer.
             Sacá tus bonos para los próximos eventos y apoyá la cultura autogestiva.
           </p>
-          <div className="flex gap-4">
-            <Button size="lg" asChild>
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto px-4">
+            <Button size="lg" asChild className="w-full sm:w-auto">
               <Link href="/eventos">
                 Ver todos los eventos
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
+            <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
               <Link href="/sobre-nosotres">Conocé más</Link>
             </Button>
           </div>
@@ -129,47 +129,47 @@ export default async function Home() {
 
       {/* Objetivo de Ampliación */}
       {objetivo && (
-        <section className="container">
+        <section className="container px-4">
           <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-6 md:p-8">
-              <div className="flex items-start gap-4">
-                <div className="rounded-lg bg-primary/10 p-3">
-                  <Target className="h-6 w-6 text-primary" />
+            <CardContent className="p-4 md:p-6 lg:p-8">
+              <div className="flex flex-col sm:flex-row items-start gap-3 md:gap-4">
+                <div className="rounded-lg bg-primary/10 p-2.5 md:p-3 self-start">
+                  <Target className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                 </div>
-                <div className="flex-1 space-y-3">
+                <div className="flex-1 space-y-3 w-full">
                   <div>
-                    <h3 className="text-xl font-bold">{objetivo.nombre}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <h3 className="text-lg md:text-xl font-bold">{objetivo.nombre}</h3>
+                    <p className="text-xs md:text-sm text-muted-foreground mt-1">
                       {objetivo.descripcion}
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-xs md:text-sm">
                       <span className="font-medium">Progreso</span>
                       <span className="text-muted-foreground">
                         ${objetivo.montoActual.toLocaleString()} / ${objetivo.montoObjetivo.toLocaleString()}
                       </span>
                     </div>
-                    <div className="h-3 bg-muted rounded-full overflow-hidden">
+                    <div className="h-2.5 md:h-3 bg-muted rounded-full overflow-hidden">
                       <div
                         className="h-full bg-primary transition-all"
                         style={{ width: `${Math.min(objetivo.porcentaje, 100)}%` }}
                       />
                     </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <p className="text-xs md:text-sm text-muted-foreground">
                         {objetivo.porcentaje.toFixed(1)}% completado
                       </p>
                       {objetivo.contributores > 0 && (
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Users className="h-4 w-4" />
+                        <div className="flex items-center gap-1 text-xs md:text-sm text-muted-foreground">
+                          <Users className="h-3.5 w-3.5 md:h-4 md:w-4" />
                           <span>{objetivo.contributores} personas aportando</span>
                         </div>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-start gap-2 mt-4 p-3 bg-primary/5 rounded-lg">
-                    <Heart className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start gap-2 mt-3 md:mt-4 p-2.5 md:p-3 bg-primary/5 rounded-lg">
+                    <Heart className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary mt-0.5 flex-shrink-0" />
                     <p className="text-xs text-muted-foreground">
                       Cada entrada que comprás ayuda a construir este espacio de forma colectiva.
                       Tu aporte se divide entre artistas, gastos operativos y este objetivo.
@@ -183,15 +183,15 @@ export default async function Home() {
       )}
 
       {/* Próximos Eventos */}
-      <section className="container space-y-8">
-        <div className="flex items-center justify-between">
+      <section className="container px-4 space-y-6 md:space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Próximos eventos</h2>
-            <p className="text-muted-foreground mt-2">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Próximos eventos</h2>
+            <p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-2">
               Sacá tus bonos y vení a disfrutar de la mejor cultura autogestiva
             </p>
           </div>
-          <Button variant="outline" asChild className="hidden md:flex">
+          <Button variant="outline" asChild className="hidden md:flex flex-shrink-0">
             <Link href="/eventos">
               Ver todos
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -200,15 +200,15 @@ export default async function Home() {
         </div>
 
         {eventosConDescuentos.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {eventosConDescuentos.map((evento) => (
               <EventoCard key={evento.id} evento={evento} />
             ))}
           </div>
         ) : (
           <Card>
-            <CardContent className="p-12 text-center">
-              <p className="text-muted-foreground">
+            <CardContent className="p-8 md:p-12 text-center">
+              <p className="text-sm md:text-base text-muted-foreground">
                 No hay eventos programados por el momento.
                 <br />
                 Seguinos en redes para estar al tanto de las novedades.
@@ -218,7 +218,7 @@ export default async function Home() {
         )}
 
         <div className="flex justify-center md:hidden">
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="w-full sm:w-auto">
             <Link href="/eventos">
               Ver todos los eventos
               <ArrowRight className="ml-2 h-4 w-4" />

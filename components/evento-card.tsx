@@ -105,32 +105,32 @@ export function EventoCard({ evento }: EventoCardProps) {
         </div>
       </Link>
 
-      <CardContent className="p-4 space-y-3">
+      <CardContent className="p-3 md:p-4 space-y-2.5 md:space-y-3">
         <Link href={`/eventos/${evento.slug}`}>
-          <h3 className="font-bold text-lg line-clamp-1 hover:text-primary transition-colors">
+          <h3 className="font-bold text-base md:text-lg line-clamp-2 hover:text-primary transition-colors">
             {evento.nombre}
           </h3>
         </Link>
 
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Calendar className="h-4 w-4" />
-          <span>
+        <div className="flex items-start gap-2 text-xs md:text-sm text-muted-foreground">
+          <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0 mt-0.5" />
+          <span className="line-clamp-2">
             {format(new Date(evento.fecha), "EEEE d 'de' MMMM", { locale: es })} - {evento.horaInicio}
           </span>
         </div>
 
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="h-4 w-4" />
+        <div className="flex items-start gap-2 text-xs md:text-sm text-muted-foreground">
+          <MapPin className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0 mt-0.5" />
           <span className="line-clamp-1">{evento.ubicacion}</span>
         </div>
 
         {headliner && (
-          <div className="flex items-center gap-2 text-sm">
-            <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">{headliner.artista.nombre}</span>
+          <div className="flex items-center gap-2 text-xs md:text-sm">
+            <Users className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
+            <span className="font-medium truncate">{headliner.artista.nombre}</span>
             {totalArtistas > 1 && (
-              <Badge variant="secondary" className="text-xs">
-                +{totalArtistas - 1} más
+              <Badge variant="secondary" className="text-xs flex-shrink-0">
+                +{totalArtistas - 1}
               </Badge>
             )}
           </div>
@@ -159,12 +159,12 @@ export function EventoCard({ evento }: EventoCardProps) {
         )}
       </CardContent>
 
-      <CardFooter className="p-4 pt-0 flex items-center justify-between">
-        <div>
+      <CardFooter className="p-3 md:p-4 pt-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:justify-between">
+        <div className="flex-shrink-0">
           {usarPromocion ? (
             // Mostrar promoción (es mejor que descuentos del usuario)
             <>
-              <p className="text-2xl font-bold">${Math.round(precioConPromocion).toLocaleString()}</p>
+              <p className="text-xl md:text-2xl font-bold">${Math.round(precioConPromocion).toLocaleString()}</p>
               <p className="text-xs text-muted-foreground line-through">
                 ${precio.toLocaleString()}
               </p>
@@ -179,7 +179,7 @@ export function EventoCard({ evento }: EventoCardProps) {
           ) : usarDescuentosUsuario ? (
             // Mostrar descuentos del usuario (son mejores que la promoción)
             <>
-              <p className="text-2xl font-bold">${Math.round(evento.precioFinal!).toLocaleString()}</p>
+              <p className="text-xl md:text-2xl font-bold">${Math.round(evento.precioFinal!).toLocaleString()}</p>
               <p className="text-xs text-muted-foreground line-through">
                 ${precio.toLocaleString()}
               </p>
@@ -190,12 +190,12 @@ export function EventoCard({ evento }: EventoCardProps) {
           ) : (
             // Sin descuentos ni promociones
             <>
-              <p className="text-2xl font-bold">${precio.toLocaleString()}</p>
+              <p className="text-xl md:text-2xl font-bold">${precio.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">Precio base</p>
             </>
           )}
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href={`/eventos/${evento.slug}`}>Sacar bono</Link>
         </Button>
       </CardFooter>
