@@ -282,8 +282,6 @@ export default function ComprarBonoPage({ params }: { params: { slug: string } }
             precioTotal={calculo.precioFinal}
             porcentajeArtista={evento.porcentajeArtista || 70}
             porcentajeBayer={evento.porcentajeBayer || 30}
-            nombreObjetivo={objetivoActivo?.nombre}
-            tieneObjetivoActivo={!!objetivoActivo && objetivoActivo.activo}
             showDetails={true}
           />
         )}
