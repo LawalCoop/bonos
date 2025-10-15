@@ -178,9 +178,9 @@ export default async function EventoPage({ params }: EventoPageProps) {
   const contributores = objetivoActivo?.cantidadPersonas || 0;
 
   return (
-    <div className="container py-8">
+    <div className="container px-4 py-6 md:py-8">
       {/* Header con imagen */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Imagen principal */}
         <div className="lg:col-span-2">
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
@@ -192,8 +192,8 @@ export default async function EventoPage({ params }: EventoPageProps) {
               priority
             />
             {evento.esFechaEspecial && (
-              <div className="absolute top-4 right-4">
-                <Badge variant="destructive" className="text-base px-3 py-1">
+              <div className="absolute top-2 right-2 md:top-4 md:right-4">
+                <Badge variant="destructive" className="text-xs md:text-base px-2 py-0.5 md:px-3 md:py-1">
                   {evento.motivoFechaEspecial || "Fecha especial"}
                 </Badge>
               </div>
@@ -201,34 +201,34 @@ export default async function EventoPage({ params }: EventoPageProps) {
           </div>
 
           {/* Info del evento */}
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 md:mt-6 space-y-3 md:space-y-4">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight">{evento.nombre}</h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{evento.nombre}</h1>
               {headliner && (
-                <p className="text-xl text-muted-foreground mt-2">
+                <p className="text-base md:text-xl text-muted-foreground mt-1 md:mt-2">
                   Con {headliner.artista.nombre}
                   {evento.artistas.length > 1 && ` y ${evento.artistas.length - 1} artista${evento.artistas.length > 2 ? 's' : ''} más`}
                 </p>
               )}
             </div>
 
-            <div className="flex flex-wrap gap-4 text-sm">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm">
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
                 <span className="font-medium">
                   {format(new Date(evento.fecha), "EEEE d 'de' MMMM, yyyy", { locale: es })}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
                 <span>{evento.horaInicio} hs</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <MapPin className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
                 <span>{evento.ubicacion}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground flex-shrink-0" />
                 <span>Capacidad: {evento.capacidad} personas</span>
               </div>
             </div>
@@ -236,9 +236,9 @@ export default async function EventoPage({ params }: EventoPageProps) {
             <Separator />
 
             {/* Descripción */}
-            <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <h2 className="text-2xl font-bold">Sobre el evento</h2>
-              <p className="whitespace-pre-line">{evento.descripcion}</p>
+            <div className="prose prose-sm md:prose-neutral dark:prose-invert max-w-none">
+              <h2 className="text-xl md:text-2xl font-bold">Sobre el evento</h2>
+              <p className="whitespace-pre-line text-sm md:text-base">{evento.descripcion}</p>
             </div>
 
             {/* Video de YouTube */}
@@ -246,7 +246,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
               <>
                 <Separator />
                 <div>
-                  <h2 className="text-2xl font-bold mb-4">Adelanto</h2>
+                  <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Adelanto</h2>
                   <div className="aspect-video w-full">
                     <iframe
                       src={`https://www.youtube.com/embed/${evento.videoYoutubeId}`}
@@ -264,17 +264,17 @@ export default async function EventoPage({ params }: EventoPageProps) {
 
             {/* Artistas */}
             <div>
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Music className="h-6 w-6" />
+              <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 flex items-center gap-2">
+                <Music className="h-5 w-5 md:h-6 md:w-6" />
                 Les artistas
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 {evento.artistas.map(({ artista, rol }) => (
                   <Card key={artista.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-4">
+                    <CardContent className="p-3 md:p-4">
+                      <div className="flex items-start gap-3 md:gap-4">
                         {artista.foto && (
-                          <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                          <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden flex-shrink-0">
                             <Image
                               src={artista.foto}
                               alt={artista.nombre}
@@ -286,16 +286,16 @@ export default async function EventoPage({ params }: EventoPageProps) {
                         <div className="flex-1 min-w-0">
                           <Link
                             href={`/artistas/${artista.slug}`}
-                            className="font-bold text-lg hover:text-primary transition-colors line-clamp-1"
+                            className="font-bold text-base md:text-lg hover:text-primary transition-colors line-clamp-1"
                           >
                             {artista.nombre}
                           </Link>
                           {rol && (
-                            <Badge variant="secondary" className="mt-1">
+                            <Badge variant="secondary" className="mt-1 text-xs">
                               {rol}
                             </Badge>
                           )}
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-xs md:text-sm text-muted-foreground mt-1">
                             {artista.ciudad}, {artista.pais}
                             {artista.esLocal && " • Artista local"}
                           </p>
@@ -311,7 +311,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
 
             {/* Distribución del dinero */}
             <div>
-              <h2 className="text-2xl font-bold mb-4">Tu aporte construye comunidad</h2>
+              <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Tu aporte construye comunidad</h2>
               <DistribucionDinero
                 precioTotal={
                   usarPromocion && promocionActiva
@@ -334,7 +334,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
               <>
                 <Separator />
                 <div>
-                  <h2 className="text-2xl font-bold mb-4">Objetivo Colectivo</h2>
+                  <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Objetivo Colectivo</h2>
                   <ObjetivoColectivo
                     nombre={objetivoActivo.nombre}
                     descripcion={objetivoActivo.descripcion}
@@ -354,8 +354,8 @@ export default async function EventoPage({ params }: EventoPageProps) {
 
         {/* Sidebar con precio y compra */}
         <div className="lg:col-span-1">
-          <Card className="sticky top-20">
-            <CardContent className="p-6 space-y-6">
+          <Card className="lg:sticky lg:top-20">
+            <CardContent className="p-4 md:p-6 space-y-4 md:space-y-6">
               {/* Sección de precio con desglose */}
               <PrecioDesglose
                 precioBase={precio}
@@ -389,13 +389,13 @@ export default async function EventoPage({ params }: EventoPageProps) {
               />
 
               <div className="space-y-2">
-                <Button size="lg" className="w-full" asChild>
+                <Button size="lg" className="w-full text-sm md:text-base" asChild>
                   <Link href={`/eventos/${evento.slug}/comprar`}>
                     Sacar bono
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="w-full">
-                  <Share2 className="mr-2 h-4 w-4" />
+                <Button size="lg" variant="outline" className="w-full text-sm md:text-base">
+                  <Share2 className="mr-2 h-3.5 w-3.5 md:h-4 md:w-4" />
                   Compartir
                 </Button>
               </div>
@@ -429,7 +429,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
                     />
                   )
                 ) : (
-                  <div className="space-y-3 text-sm">
+                  <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
                     <h3 className="font-bold">Desbloquea descuentos:</h3>
                     {descuentosPotenciales.length > 0 ? (
                       <DescuentosGamificado
@@ -449,9 +449,9 @@ export default async function EventoPage({ params }: EventoPageProps) {
                   </div>
                 )
               ) : (
-                <div className="space-y-3 text-sm">
+                <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
                   <h3 className="font-bold">Descuentos disponibles:</h3>
-                  <ul className="space-y-2 text-muted-foreground">
+                  <ul className="space-y-1.5 md:space-y-2 text-muted-foreground">
                     <li>• Socies de la biblioteca: 15%</li>
                     <li>• Mutuales y organizaciones: 10-12%</li>
                     <li>• Por nivel: hasta 20%</li>
@@ -466,7 +466,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
               <Separator />
 
               <div className="text-xs text-muted-foreground">
-                <p className="font-medium mb-2">Sobre los bonos:</p>
+                <p className="font-medium mb-1.5 md:mb-2">Sobre los bonos:</p>
                 <p>
                   Todo lo recaudado va para les artistas y para la ampliación de la biblioteca.
                   Tu bono llegará por email con un código QR para el ingreso.
