@@ -309,7 +309,7 @@ export default async function AdminDashboard() {
                     <Badge variant="outline" className="text-xs">
                       +{objetivoActivo.eventos.length - 5} más
                     </Badge>
-                  ))}
+                  )}
                 </div>
               </div>
             )}
