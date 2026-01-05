@@ -58,15 +58,32 @@ Máximo 2 párrafos.
 Responde SOLO con la biografía, sin comentarios adicionales.`
     } else {
       // Descripción de evento - con contexto del espacio
-      const config = contextoEspacio || (await getConfig())
+      // Normalizar campos entre contextoEspacio y getConfig()
+      let espacioNombre: string
+      let espacioDescripcion: string
+      let espacioCiudad: string
+      let espacioTipo: string | undefined
 
-      prompt = `Genera una descripción atractiva para un evento musical con "${nombreArtista}" en ${config.nombre || 'el espacio cultural'}.
+      if (contextoEspacio) {
+        espacioNombre = contextoEspacio.nombre
+        espacioDescripcion = contextoEspacio.descripcion
+        espacioCiudad = contextoEspacio.ciudad
+        espacioTipo = contextoEspacio.tipo
+      } else {
+        const config = await getConfig()
+        espacioNombre = config.nombreSitio
+        espacioDescripcion = config.descripcion || 'Espacio cultural independiente'
+        espacioCiudad = config.ciudad
+        espacioTipo = undefined
+      }
+
+      prompt = `Genera una descripción atractiva para un evento musical con "${nombreArtista}" en ${espacioNombre || 'el espacio cultural'}.
 
 CONTEXTO DEL ESPACIO:
-- Nombre: ${config.nombre}
-- Descripción: ${config.descripcion || 'Espacio cultural independiente'}
-- Ciudad: ${config.ciudad}
-${config.tipo ? `- Tipo: ${config.tipo}` : ''}
+- Nombre: ${espacioNombre}
+- Descripción: ${espacioDescripcion}
+- Ciudad: ${espacioCiudad}
+${espacioTipo ? `- Tipo: ${espacioTipo}` : ''}
 
 REGLAS CRÍTICAS:
 1. Si NO CONOCES al artista:
