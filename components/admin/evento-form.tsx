@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, X, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { GastosEvento } from "./gastos-evento";
+import { ArtistaCombobox } from "./artista-combobox";
+import { GenerarConIAButton } from "./generar-con-ia-button";
 import slugify from "slugify";
 
 interface EventoFormProps {
@@ -33,11 +35,12 @@ interface ArtistaAsignado {
   rol: string;
 }
 
-export function EventoForm({ evento, artistas, objetivos = [], eventoId }: EventoFormProps) {
+export function EventoForm({ evento, artistas: artistasIniciales, objetivos = [], eventoId }: EventoFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showDistribucion, setShowDistribucion] = useState(false);
   const [showGastos, setShowGastos] = useState(false);
+  const [artistas, setArtistas] = useState(artistasIniciales);
   const [formData, setFormData] = useState({
     nombre: evento?.nombre || "",
     slug: evento?.slug || "",
@@ -211,7 +214,24 @@ export function EventoForm({ evento, artistas, objetivos = [], eventoId }: Event
 
       {/* Descripción */}
       <div className="space-y-2">
-        <Label htmlFor="descripcion">Descripción *</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="descripcion">Descripción *</Label>
+          <GenerarConIAButton
+            tipo="descripcion_evento"
+            nombreArtista={
+              // Usar el artista seleccionado, o el primero agregado si no hay selección
+              selectedArtistaId
+                ? artistas.find((a) => a.id === selectedArtistaId)?.nombre || ''
+                : artistasAsignados.length > 0
+                ? artistas.find((a) => a.id === artistasAsignados[0].artistaId)?.nombre || ''
+                : ''
+            }
+            onTextoGenerado={(texto) =>
+              setFormData({ ...formData, descripcion: texto })
+            }
+            size="sm"
+          />
+        </div>
         <textarea
           id="descripcion"
           value={formData.descripcion}
@@ -223,6 +243,9 @@ export function EventoForm({ evento, artistas, objetivos = [], eventoId }: Event
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Describe el evento..."
         />
+        <p className="text-xs text-muted-foreground">
+          💡 Tip: Selecciona un artista para generar la descripción con IA
+        </p>
       </div>
 
       {/* Fecha y Hora */}
@@ -375,24 +398,18 @@ export function EventoForm({ evento, artistas, objetivos = [], eventoId }: Event
         {/* Agregar artista */}
         <div className="grid gap-4 md:grid-cols-3">
           <div className="space-y-2 md:col-span-1">
-            <Label htmlFor="artistaSelect">Seleccionar Artista</Label>
-            <select
-              id="artistaSelect"
+            <Label>Seleccionar Artista</Label>
+            <ArtistaCombobox
+              artistas={artistas}
               value={selectedArtistaId}
-              onChange={(e) => setSelectedArtistaId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">-- Seleccionar --</option>
-              {artistas
-                .filter(
-                  (a) => !artistasAsignados.find((aa) => aa.artistaId === a.id)
-                )
-                .map((artista) => (
-                  <option key={artista.id} value={artista.id}>
-                    {artista.nombre}
-                  </option>
-                ))}
-            </select>
+              onValueChange={setSelectedArtistaId}
+              excludeIds={artistasAsignados.map((aa) => aa.artistaId)}
+              placeholder="Buscar o crear artista..."
+              onArtistaCreado={(artista) => {
+                setArtistas([...artistas, artista])
+                setSelectedArtistaId(artista.id)
+              }}
+            />
           </div>
 
           <div className="space-y-2 md:col-span-1">

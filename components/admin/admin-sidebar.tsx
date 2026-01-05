@@ -21,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useConfig } from "@/hooks/use-config";
 
 const menuItems = [
   {
@@ -56,6 +57,7 @@ const menuItems = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { config } = useConfig();
 
   const closeSidebar = () => setIsOpen(false);
 
@@ -69,7 +71,7 @@ export function AdminSidebar() {
               Admin Panel
             </h2>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              La Bayer Experimental
+              {config?.nombreCorto || 'La Bayer'}
             </p>
           </div>
           <Button
@@ -104,7 +106,7 @@ export function AdminSidebar() {
               Admin Panel
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              La Bayer Experimental
+              {config?.nombreCorto || 'La Bayer'}
             </p>
           </div>
 

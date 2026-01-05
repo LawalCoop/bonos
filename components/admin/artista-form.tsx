@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { GenerarConIAButton } from "./generar-con-ia-button";
 import slugify from "slugify";
 
 interface ArtistaFormProps {
@@ -101,16 +102,30 @@ export function ArtistaForm({ artista }: ArtistaFormProps) {
 
       {/* Bio */}
       <div className="space-y-2">
-        <Label htmlFor="bio">Biografía *</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="bio">Biografía *</Label>
+          <GenerarConIAButton
+            tipo="bio"
+            nombreArtista={formData.nombre}
+            ciudad={formData.ciudad}
+            onTextoGenerado={(texto) =>
+              setFormData({ ...formData, bio: texto })
+            }
+            size="sm"
+          />
+        </div>
         <textarea
           id="bio"
           value={formData.bio}
           onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
           required
-          rows={4}
+          rows={6}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Describe al artista..."
         />
+        <p className="text-xs text-muted-foreground">
+          💡 Tip: Primero ingresa el nombre del artista y luego genera la bio con IA
+        </p>
       </div>
 
       {/* Ubicación */}

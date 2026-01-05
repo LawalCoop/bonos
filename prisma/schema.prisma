@@ -484,6 +484,69 @@ model GastoEvento {
 }
 
 // ============================================
+// CONFIGURACIÓN DEL SITIO
+// ============================================
+
+model Configuracion {
+  id String @id @default(cuid())
+
+  // Información básica
+  nombreSitio     String  @default("La Bayer Experimental")
+  nombreCorto     String  @default("La Bayer")
+  descripcion     String? @db.Text
+  direccion       String  @default("Av. Juan B. Justo 6050")
+  ciudad          String  @default("Buenos Aires")
+  provincia       String  @default("CABA")
+  pais            String  @default("Argentina")
+  codigoPostal    String?
+
+  // Contacto
+  telefono        String?
+  email           String  @default("hola@labayer.org")
+  whatsapp        String?
+
+  // Media
+  logoUrl         String?
+  faviconUrl      String?
+  imagenDefault   String? // Imagen por defecto para compartir en redes
+
+  // Redes sociales
+  instagram       String?
+  facebook        String?
+  twitter         String?
+  youtube         String?
+  tiktok          String?
+
+  // Personalización
+  colorPrimario   String? @default("#000000")
+  colorSecundario String? @default("#ffffff")
+
+  // Legal
+  terminosUrl     String?
+  privacidadUrl   String?
+  sobreNosotros   String? @db.Text
+
+  // Financiero
+  cbu             String?
+  alias           String?
+  cuit            String?
+
+  // Mercado Pago
+  mercadoPagoAccessToken String?
+  mercadoPagoPublicKey   String?
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Configuracion")
+}
+
+// ============================================
 // NEXT-AUTH MODELS
 // ============================================
 

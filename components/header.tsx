@@ -17,9 +17,11 @@ import { Progress } from "@/components/ui/progress";
 import { User, LogOut, Ticket, Bell, Zap } from "lucide-react";
 import { NIVELES, getNivelInfo } from "@/lib/constants";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useConfig } from "@/hooks/use-config";
 
 export function Header() {
   const { data: session } = useSession();
+  const { config } = useConfig();
 
   // Calculate level progress
   const calcularProgreso = () => {
@@ -51,9 +53,17 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
-          <div className="font-bold text-xl">
-            La Bayer <span className="text-primary">Experimental</span>
-          </div>
+          {config?.logoUrl ? (
+            <img
+              src={config.logoUrl}
+              alt={config.nombreSitio}
+              className="h-12 md:h-14 lg:h-16 w-auto max-w-[200px] md:max-w-[280px] lg:max-w-[320px] object-contain"
+            />
+          ) : (
+            <div className="font-bold text-xl">
+              {config?.nombreCorto || 'La Bayer'} <span className="text-primary">{config?.nombreSitio.replace(config?.nombreCorto || 'La Bayer', '').trim() || 'Experimental'}</span>
+            </div>
+          )}
         </Link>
 
         {/* Navigation */}
