@@ -52,7 +52,7 @@ export default async function MisBonosPage() {
         <div>
           <h1 className="text-3xl font-bold">Mis Bonos</h1>
           <p className="text-muted-foreground mt-2">
-            Tus entradas para eventos de La Bayer Experimental
+            Tus bonos contribución para eventos de La Bayer Experimental
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export default async function MisBonosPage() {
                 No tenés bonos todavía
               </h3>
               <p className="text-muted-foreground mb-4">
-                Cuando compres entradas para eventos, aparecerán acá
+                Cuando compres bonos contribución para eventos, aparecerán acá
               </p>
             </CardContent>
           </Card>
@@ -132,7 +132,7 @@ export default async function MisBonosPage() {
                           Precio pagado
                         </p>
                         <p className="font-bold text-lg">
-                          ${bono.precioFinal.toLocaleString()}
+                          ${bono.precioFinal.toLocaleString("es-AR")}
                         </p>
                       </div>
                     </div>

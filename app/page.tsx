@@ -111,13 +111,14 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="container px-4">
         <div className="flex flex-col items-center text-center space-y-4 md:space-y-6 max-w-3xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight">
-            Bienvenide a{" "}
-            <span className="text-primary">La Bayer Experimental</span>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight font-poppins">
+            <span className="text-primary">Bayer Experimental</span>
           </h1>
           <p className="text-base md:text-xl text-muted-foreground px-4">
-            Espacio cultural de la Biblioteca Popular Osvaldo Bayer.
-            Sacá tus bonos para los próximos eventos y apoyá la cultura autogestiva.
+            Ciclo cultural gestado en la Biblioteca Popular Osvaldo Bayer.
+          </p>
+          <p className="text-sm md:text-base text-muted-foreground px-4">
+            Sacá tus bonos contribución para los próximos eventos y apoyá la cultura autogestiva.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto px-4">
             <Button size="lg" asChild className="w-full sm:w-auto">
@@ -133,7 +134,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Objetivo de Ampliación */}
+      {/* Objetivo Colectivo */}
       {objetivo && (
         <section className="container px-4">
           <Card className="bg-primary/5 border-primary/20">
@@ -153,7 +154,7 @@ export default async function Home() {
                     <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-xs md:text-sm">
                       <span className="font-medium">Progreso</span>
                       <span className="text-muted-foreground">
-                        ${objetivo.montoActual.toLocaleString()} / ${objetivo.montoObjetivo.toLocaleString()}
+                        ${objetivo.montoActual.toLocaleString("es-AR")} / ${objetivo.montoObjetivo.toLocaleString("es-AR")}
                       </span>
                     </div>
                     <div className="h-2.5 md:h-3 bg-muted rounded-full overflow-hidden">
@@ -189,7 +190,7 @@ export default async function Home() {
                   <div className="flex items-start gap-2 mt-3 md:mt-4 p-2.5 md:p-3 bg-primary/5 rounded-lg">
                     <Heart className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary mt-0.5 flex-shrink-0" />
                     <p className="text-xs text-muted-foreground">
-                      Cada entrada que comprás ayuda a construir este espacio de forma colectiva.
+                      Cada bono contribución que comprás ayuda a construir este espacio de forma colectiva.
                       Tu aporte se divide entre artistas, gastos operativos y este objetivo.
                     </p>
                   </div>
@@ -206,7 +207,7 @@ export default async function Home() {
           <div>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Próximos eventos</h2>
             <p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-2">
-              Sacá tus bonos y vení a disfrutar de la mejor cultura autogestiva
+              Sacá tus bonos contribución y vení a disfrutar
             </p>
           </div>
           <Button variant="outline" asChild className="hidden md:flex flex-shrink-0">

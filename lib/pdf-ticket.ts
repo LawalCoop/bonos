@@ -112,7 +112,7 @@ export async function generateTicketPDF(data: TicketData): Promise<Buffer> {
       doc.setFontSize(12);
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.text(`$${data.precioFinal.toLocaleString()}`, pageWidth - 35, infoY + 16, {
+      doc.text(`$${data.precioFinal.toLocaleString("es-AR")}`, pageWidth - 35, infoY + 16, {
         align: "center",
       });
 

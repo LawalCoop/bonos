@@ -164,9 +164,9 @@ export function EventoCard({ evento }: EventoCardProps) {
           {usarPromocion ? (
             // Mostrar promoción (es mejor que descuentos del usuario)
             <>
-              <p className="text-xl md:text-2xl font-bold">${Math.round(precioConPromocion).toLocaleString()}</p>
+              <p className="text-xl md:text-2xl font-bold">${Math.round(precioConPromocion).toLocaleString("es-AR")}</p>
               <p className="text-xs text-muted-foreground line-through">
-                ${precio.toLocaleString()}
+                ${precio.toLocaleString("es-AR")}
               </p>
               {promocion?.tipo === "2x1" ? (
                 <p className="text-xs text-green-600 font-medium">c/u comprando 2 🎉</p>
@@ -179,9 +179,9 @@ export function EventoCard({ evento }: EventoCardProps) {
           ) : usarDescuentosUsuario ? (
             // Mostrar descuentos del usuario (son mejores que la promoción)
             <>
-              <p className="text-xl md:text-2xl font-bold">${Math.round(evento.precioFinal!).toLocaleString()}</p>
+              <p className="text-xl md:text-2xl font-bold">${Math.round(evento.precioFinal!).toLocaleString("es-AR")}</p>
               <p className="text-xs text-muted-foreground line-through">
-                ${precio.toLocaleString()}
+                ${precio.toLocaleString("es-AR")}
               </p>
               <p className="text-xs text-blue-600 font-medium">
                 Tus descuentos: {Math.round(totalDescuentoUsuario)}%
@@ -190,7 +190,7 @@ export function EventoCard({ evento }: EventoCardProps) {
           ) : (
             // Sin descuentos ni promociones
             <>
-              <p className="text-xl md:text-2xl font-bold">${precio.toLocaleString()}</p>
+              <p className="text-xl md:text-2xl font-bold">${precio.toLocaleString("es-AR")}</p>
               <p className="text-xs text-muted-foreground">Precio base</p>
             </>
           )}

@@ -60,7 +60,7 @@ export function ObjetivoColectivo({
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">
-                    ${montoActual.toLocaleString()} de ${montoObjetivo.toLocaleString()}
+                    ${montoActual.toLocaleString("es-AR")} de ${montoObjetivo.toLocaleString("es-AR")}
                   </span>
                   <span className="font-bold text-green-600">
                     {porcentajeCalculado.toFixed(0)}%
@@ -114,10 +114,10 @@ export function ObjetivoColectivo({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-green-600">
-                ${montoActual.toLocaleString()}
+                ${montoActual.toLocaleString("es-AR")}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                recaudados de ${montoObjetivo.toLocaleString()}
+                recaudados de ${montoObjetivo.toLocaleString("es-AR")}
               </p>
             </div>
             <div className="text-right">
@@ -131,7 +131,7 @@ export function ObjetivoColectivo({
 
           {!estaCompletado && (
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Faltan <span className="font-bold text-green-600">${montoFaltante.toLocaleString()}</span> para alcanzar el objetivo
+              Faltan <span className="font-bold text-green-600">${montoFaltante.toLocaleString("es-AR")}</span> para alcanzar el objetivo
             </p>
           )}
         </div>
@@ -172,7 +172,7 @@ export function ObjetivoColectivo({
           <div className="flex items-start gap-2">
             <TrendingUp className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              Cada entrada que comprás suma a este objetivo colectivo.
+              Cada bono contribución que comprás suma a este objetivo colectivo.
               {!estaCompletado && " ¡Juntes estamos construyendo algo más grande!"}
               {estaCompletado && " ¡Gracias por ser parte de este logro!"}
             </p>

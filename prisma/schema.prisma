@@ -92,6 +92,9 @@ model Evento {
   fechaPagoArtistas DateTime?
   notas             String? @db.Text
 
+  // Mensaje personalizado para la sección "Sobre los bonos"
+  mensajeBonos      String? @db.Text
+
   // Estado
   estado String @default("PROGRAMADO") // PROGRAMADO, PUBLICADO, FINALIZADO, CANCELADO
 
@@ -544,6 +547,25 @@ model Configuracion {
   updatedAt DateTime @updatedAt
 
   @@map("Configuracion")
+}
+
+// ============================================
+// SISTEMA DE NIVELES (Gamificación)
+// ============================================
+
+model NivelConfig {
+  id        String @id @default(cuid())
+  nivel     Int    @unique // 1, 2, 3, etc.
+  nombre    String // "Primera Vez", "Explorando", etc.
+  icono     String // emoji o icono
+  puntos    Int    // puntos necesarios para alcanzar este nivel
+  descuento Float  // porcentaje de descuento (0-100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("NivelConfig")
+  @@index([nivel])
 }
 
 // ============================================

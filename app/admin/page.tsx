@@ -167,7 +167,7 @@ export default async function AdminDashboard() {
     },
     {
       title: "Total Recaudado",
-      value: `$${stats.totalRecaudado.toLocaleString()}`,
+      value: `$${stats.totalRecaudado.toLocaleString("es-AR")}`,
       subtitle: "Todo el tiempo",
       icon: DollarSign,
       color: "text-emerald-600",
@@ -264,13 +264,13 @@ export default async function AdminDashboard() {
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Recaudado</p>
                 <p className="text-lg md:text-2xl font-bold text-primary">
-                  ${objetivoActivo.montoActual.toLocaleString()}
+                  ${objetivoActivo.montoActual.toLocaleString("es-AR")}
                 </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Objetivo</p>
                 <p className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
-                  ${objetivoActivo.montoObjetivo.toLocaleString()}
+                  ${objetivoActivo.montoObjetivo.toLocaleString("es-AR")}
                 </p>
               </div>
               <div className="space-y-1">
@@ -289,7 +289,7 @@ export default async function AdminDashboard() {
                   <span>{objetivoActivo.contributores} personas contribuyendo</span>
                 </div>
                 <div className="text-muted-foreground">
-                  Faltan ${(objetivoActivo.montoObjetivo - objetivoActivo.montoActual).toLocaleString()}
+                  Faltan ${(objetivoActivo.montoObjetivo - objetivoActivo.montoActual).toLocaleString("es-AR")}
                 </div>
               </div>
             </div>
@@ -367,7 +367,7 @@ export default async function AdminDashboard() {
                       {evento._count.bonos} bonos
                     </div>
                     <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                      ${evento.totalRecaudado.toLocaleString()}
+                      ${evento.totalRecaudado.toLocaleString("es-AR")}
                     </div>
                   </div>
                 </div>

@@ -79,10 +79,10 @@ export default async function AdminObjetivosPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Objetivos de Ampliación
+          Objetivos Colectivos
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Gestiona los objetivos para la ampliación de la biblioteca
+          Gestiona los objetivos colectivos de recaudación
         </p>
       </div>
 
@@ -127,7 +127,7 @@ export default async function AdminObjetivosPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${Math.round(stats.promedioEvento).toLocaleString()}
+              ${Math.round(stats.promedioEvento).toLocaleString("es-AR")}
             </div>
             <p className="text-xs text-gray-500 mt-1">
               por evento realizado

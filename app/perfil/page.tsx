@@ -637,7 +637,7 @@ export default function PerfilPage() {
                           Total gastado
                         </p>
                         <p className="text-lg font-bold text-emerald-600">
-                          ${grupo.totalGastado.toLocaleString()}
+                          ${grupo.totalGastado.toLocaleString("es-AR")}
                         </p>
                       </div>
                     </div>
@@ -729,7 +729,7 @@ export default function PerfilPage() {
                               Total gastado
                             </p>
                             <p className="text-base font-semibold text-emerald-600">
-                              ${grupo.totalGastado.toLocaleString()}
+                              ${grupo.totalGastado.toLocaleString("es-AR")}
                             </p>
                           </div>
                         </div>
@@ -769,7 +769,7 @@ export default function PerfilPage() {
                     $
                     {perfil.eventosAsistidos
                       .reduce((sum: number, grupo: any) => sum + grupo.totalGastado, 0)
-                      .toLocaleString()}
+                      .toLocaleString("es-AR")}
                   </p>
                 </div>
               </div>

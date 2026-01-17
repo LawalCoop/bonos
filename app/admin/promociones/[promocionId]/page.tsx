@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -24,9 +24,38 @@ interface Evento {
   estado: string;
 }
 
-export default function NuevaPromocionPage() {
+interface Promocion {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  tipo: string;
+  valor: number;
+  activo: boolean;
+  prioridad: number;
+  requiereAuth: boolean;
+  codigo: string | null;
+  fechaInicio: string;
+  fechaFin: string;
+  eventoId: string | null;
+}
+
+function formatDateTimeLocal(dateString: string): string {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+export default function EditarPromocionPage() {
   const router = useRouter();
+  const params = useParams();
+  const promocionId = params.promocionId as string;
+
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [formData, setFormData] = useState({
     nombre: "",
@@ -43,15 +72,49 @@ export default function NuevaPromocionPage() {
   });
 
   useEffect(() => {
-    fetch("/api/admin/eventos")
-      .then((res) => res.json())
-      .then((data) => {
-        const availableEventos = data.filter(
+    const fetchData = async () => {
+      try {
+        const [promocionRes, eventosRes] = await Promise.all([
+          fetch(`/api/admin/promociones/${promocionId}`),
+          fetch("/api/admin/eventos"),
+        ]);
+
+        if (!promocionRes.ok) {
+          throw new Error("Promoción no encontrada");
+        }
+
+        const promocion: Promocion = await promocionRes.json();
+        const eventosData = await eventosRes.json();
+
+        const availableEventos = eventosData.filter(
           (e: Evento) => e.estado === "PROGRAMADO" || e.estado === "PUBLICADO"
         );
         setEventos(availableEventos);
-      });
-  }, []);
+
+        setFormData({
+          nombre: promocion.nombre,
+          descripcion: promocion.descripcion,
+          tipo: promocion.tipo,
+          valor: promocion.valor,
+          activo: promocion.activo,
+          prioridad: promocion.prioridad,
+          requiereAuth: promocion.requiereAuth,
+          codigo: promocion.codigo || "",
+          fechaInicio: formatDateTimeLocal(promocion.fechaInicio),
+          fechaFin: formatDateTimeLocal(promocion.fechaFin),
+          eventoId: promocion.eventoId || "GLOBAL",
+        });
+      } catch (error) {
+        console.error("Error loading promocion:", error);
+        alert("Error al cargar la promoción");
+        router.push("/admin/promociones");
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    fetchData();
+  }, [promocionId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,8 +129,8 @@ export default function NuevaPromocionPage() {
         codigo: formData.codigo || null,
       };
 
-      const res = await fetch("/api/admin/promociones", {
-        method: "POST",
+      const res = await fetch(`/api/admin/promociones/${promocionId}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -77,15 +140,23 @@ export default function NuevaPromocionPage() {
         router.refresh();
       } else {
         const error = await res.json();
-        alert(`Error: ${error.error || "No se pudo crear la promoción"}`);
+        alert(`Error: ${error.error || "No se pudo actualizar la promoción"}`);
       }
     } catch (error) {
-      console.error("Error creating promocion:", error);
-      alert("Error al crear la promoción");
+      console.error("Error updating promocion:", error);
+      alert("Error al actualizar la promoción");
     } finally {
       setLoading(false);
     }
   };
+
+  if (loadingData) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -98,10 +169,10 @@ export default function NuevaPromocionPage() {
         </Link>
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Nueva Promoción
+            Editar Promoción
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            Crea una nueva promoción o descuento
+            Modifica los datos de la promoción
           </p>
         </div>
       </div>
@@ -334,10 +405,10 @@ export default function NuevaPromocionPage() {
                 {loading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Creando...
+                    Guardando...
                   </>
                 ) : (
-                  "Crear Promoción"
+                  "Guardar Cambios"
                 )}
               </Button>
               <Link href="/admin/promociones">

@@ -30,7 +30,7 @@ export function DistribucionDinero({
       <CardContent className="space-y-4">
         <div className="text-center mb-6">
           <div className="text-3xl font-bold text-purple-600">
-            ${precioTotal.toLocaleString()}
+            ${precioTotal.toLocaleString("es-AR")}
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Total de tu bono
@@ -52,7 +52,7 @@ export function DistribucionDinero({
               </div>
             </div>
             <div className="text-right">
-              <p className="font-bold text-blue-600">${montoArtista.toLocaleString()}</p>
+              <p className="font-bold text-blue-600">${montoArtista.toLocaleString("es-AR")}</p>
             </div>
           </div>
           {showDetails && (
@@ -77,7 +77,7 @@ export function DistribucionDinero({
               </div>
             </div>
             <div className="text-right">
-              <p className="font-bold text-orange-600">${montoBayer.toLocaleString()}</p>
+              <p className="font-bold text-orange-600">${montoBayer.toLocaleString("es-AR")}</p>
             </div>
           </div>
           {showDetails && (
@@ -90,7 +90,7 @@ export function DistribucionDinero({
         {showDetails && (
           <div className="pt-4 border-t border-purple-200 dark:border-purple-800">
             <p className="text-xs text-center text-gray-600 dark:text-gray-400 italic">
-              Tu entrada no solo te da música en vivo, construye un espacio cultural autogestionado 🎵
+              Tu bono contribución no solo te da música en vivo, construye un espacio cultural autogestionado 🎵
             </p>
           </div>
         )}

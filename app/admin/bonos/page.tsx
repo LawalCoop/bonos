@@ -216,7 +216,7 @@ export default async function AdminBonosPage({
           </CardHeader>
           <CardContent className="p-3 md:p-6 pt-0">
             <div className="text-xl md:text-2xl font-bold text-emerald-600">
-              ${stats.totalRecaudado.toLocaleString()}
+              ${stats.totalRecaudado.toLocaleString("es-AR")}
             </div>
           </CardContent>
         </Card>

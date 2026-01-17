@@ -288,7 +288,7 @@ export default function ScannerPage() {
           Modalidad Ingreso
         </h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Validación de entradas y venta en puerta
+          Validación de bonos y venta en puerta
         </p>
       </div>
 
@@ -601,7 +601,7 @@ export default function ScannerPage() {
                         Precio Pagado
                       </p>
                       <p className="text-2xl lg:text-xl font-bold text-green-600">
-                        ${result.bono.precioFinal.toLocaleString()}
+                        ${result.bono.precioFinal.toLocaleString("es-AR")}
                       </p>
                     </div>
 
@@ -653,7 +653,7 @@ export default function ScannerPage() {
                         Precio Pagado
                       </p>
                       <p className="text-2xl lg:text-xl font-bold text-purple-600">
-                        ${(result.ventaExterna.precio * result.ventaExterna.cantidad).toLocaleString()}
+                        ${(result.ventaExterna.precio * result.ventaExterna.cantidad).toLocaleString("es-AR")}
                       </p>
                       {result.ventaExterna.cantidad > 1 && (
                         <p className="text-sm text-gray-500 mt-1">

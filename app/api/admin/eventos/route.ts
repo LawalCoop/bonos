@@ -68,6 +68,7 @@ export async function POST(request: Request) {
       videoYoutubeId,
       artistas,
       objetivoId,
+      mensajeBonos,
     } = body;
 
     // Validar campos requeridos
@@ -99,12 +100,17 @@ export async function POST(request: Request) {
       );
     }
 
+    // Crear fecha con la hora del evento para evitar problemas de timezone
+    // Si solo usamos la fecha, JS la interpreta como medianoche UTC
+    // que en Argentina (UTC-3) sería el día anterior a las 21hs
+    const fechaConHora = new Date(`${fecha}T${horaInicio}:00`);
+
     const evento = await prisma.evento.create({
       data: {
         nombre,
         slug,
         descripcion,
-        fecha: new Date(fecha),
+        fecha: fechaConHora,
         horaInicio,
         ubicacion,
         capacidad: parseInt(capacidad),
@@ -113,6 +119,7 @@ export async function POST(request: Request) {
         porcentajeBayer: porcentajeBayer ? parseFloat(porcentajeBayer) : 30,
         imagenPrincipal,
         videoYoutubeId: videoYoutubeId || null,
+        mensajeBonos: mensajeBonos || null,
         galeria: [],
         estado: "PROGRAMADO",
         artistas: artistas?.length

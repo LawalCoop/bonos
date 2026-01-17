@@ -56,6 +56,7 @@ export function EventoForm({ evento, artistas: artistasIniciales, objetivos = []
     porcentajeBayer: evento?.porcentajeBayer || 30,
     imagenPrincipal: evento?.imagenPrincipal || "",
     videoYoutubeId: evento?.videoYoutubeId || "",
+    mensajeBonos: evento?.mensajeBonos || "",
   });
 
   // Estado para el objetivo seleccionado (solo ID, sin porcentaje)
@@ -92,6 +93,7 @@ export function EventoForm({ evento, artistas: artistasIniciales, objetivos = []
         porcentajeBayer: parseInt(formData.porcentajeBayer.toString()),
         artistas: artistasAsignados,
         objetivoId: objetivoId || null,
+        mensajeBonos: formData.mensajeBonos || null,
       };
 
       const res = await fetch(url, {
@@ -347,6 +349,24 @@ export function EventoForm({ evento, artistas: artistasIniciales, objetivos = []
         </div>
       </div>
 
+      {/* Mensaje personalizado sobre los bonos */}
+      <div className="space-y-2">
+        <Label htmlFor="mensajeBonos">Mensaje "Sobre los bonos" (opcional)</Label>
+        <textarea
+          id="mensajeBonos"
+          value={formData.mensajeBonos}
+          onChange={(e) =>
+            setFormData({ ...formData, mensajeBonos: e.target.value })
+          }
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Todo lo recaudado va para les artistas y para la ampliación de la biblioteca..."
+        />
+        <p className="text-xs text-muted-foreground">
+          Si lo dejás vacío, se mostrará el mensaje predeterminado: "Todo lo recaudado va para les artistas y para la ampliación de la biblioteca. Tu bono llegará por email con un código QR para el ingreso."
+        </p>
+      </div>
+
       {/* Objetivo Colectivo */}
       {objetivos && objetivos.length > 0 && (
         <div className="space-y-4 p-4 border rounded-lg bg-purple-50 dark:bg-purple-900/20">
@@ -370,7 +390,7 @@ export function EventoForm({ evento, artistas: artistasIniciales, objetivos = []
               <option value="">-- Sin objetivo (va a gastos generales) --</option>
               {objetivos.map((obj) => (
                 <option key={obj.id} value={obj.id}>
-                  {obj.nombre} (${obj.montoActual.toLocaleString()} / ${obj.montoObjetivo.toLocaleString()})
+                  {obj.nombre} (${obj.montoActual.toLocaleString("es-AR")} / ${obj.montoObjetivo.toLocaleString("es-AR")})
                 </option>
               ))}
             </select>

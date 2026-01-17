@@ -289,8 +289,8 @@ export function ObjetivosList({ objetivos }: ObjetivosListProps) {
               <div className="mt-3 space-y-2">
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-600 dark:text-gray-300">
-                    ${objetivo.montoActual.toLocaleString()} / $
-                    {objetivo.montoObjetivo.toLocaleString()}
+                    ${objetivo.montoActual.toLocaleString("es-AR")} / $
+                    {objetivo.montoObjetivo.toLocaleString("es-AR")}
                   </span>
                   <span className="font-medium text-gray-900 dark:text-white">
                     {((objetivo.montoActual / objetivo.montoObjetivo) * 100).toFixed(1)}%

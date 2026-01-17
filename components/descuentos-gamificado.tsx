@@ -558,7 +558,7 @@ export function DescuentosGamificado({
             {/* Precio base */}
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Precio base</span>
-              <span className="font-medium">${precioBase.toLocaleString()}</span>
+              <span className="font-medium">${precioBase.toLocaleString("es-AR")}</span>
             </div>
 
             {/* Descuentos aplicados con iconos */}
@@ -588,7 +588,7 @@ export function DescuentosGamificado({
                 {usarPromocion ? "Con promoción" : "Con descuentos"}
               </span>
               <span className="text-2xl font-bold text-green-600">
-                ${precioFinal ? Math.round(precioFinal).toLocaleString() : "0"}
+                ${precioFinal ? Math.round(precioFinal).toLocaleString("es-AR") : "0"}
               </span>
             </div>
 
@@ -596,7 +596,7 @@ export function DescuentosGamificado({
             {precioFinal && precioBase && (
               <div className="text-center p-2 bg-green-50 dark:bg-green-950/30 rounded-lg">
                 <p className="text-xs text-green-700 dark:text-green-400">
-                  {usarPromocion ? "⚡ La promoción es mejor que tus descuentos" : `✨ Ahorrás $${Math.round(precioBase - precioFinal).toLocaleString()}`}
+                  {usarPromocion ? "⚡ La promoción es mejor que tus descuentos" : `✨ Ahorrás $${Math.round(precioBase - precioFinal).toLocaleString("es-AR")}`}
                 </p>
               </div>
             )}

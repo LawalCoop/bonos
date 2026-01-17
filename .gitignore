@@ -74,3 +74,9 @@ prisma/*.db-journal
 *.tmp
 *.temp
 .cache/
+
+# Notas personales de desarrollo
+notas-flor-desarrollo/
+
+# Manual de marca (referencia local)
+Manual de marca BPOB.pdf

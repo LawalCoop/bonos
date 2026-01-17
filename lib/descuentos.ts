@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { NIVELES } from "@/lib/constants";
+import { getNivelesFromDB } from "@/lib/niveles";
 
 export interface DescuentoAplicado {
   tipo: string;
@@ -190,6 +190,9 @@ export async function calcularDescuentos(
   const descuentosAcumulables: DescuentoAplicado[] = [];
   const descuentosNoAcumulables: DescuentoAplicado[] = [];
 
+  // Obtener niveles de la base de datos
+  const niveles = await getNivelesFromDB();
+
   // Procesar cada regla de descuento
   for (const regla of reglasDescuento) {
     let aplica = false;
@@ -217,7 +220,7 @@ export async function calcularDescuentos(
         if (regla.nivelMinimo && !nivelAplicado) {
           aplica = user.nivel === regla.nivelMinimo;
           if (aplica) {
-            const nivelInfo = NIVELES[user.nivel as keyof typeof NIVELES];
+            const nivelInfo = niveles[user.nivel] || { nombre: `Nivel ${user.nivel}` };
             nombreDescuento = `Nivel ${user.nivel}: ${nivelInfo.nombre}`;
             nivelAplicado = true; // Marcar que ya aplicamos un descuento de nivel
           }

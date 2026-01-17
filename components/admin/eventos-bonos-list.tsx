@@ -110,7 +110,7 @@ export function EventoBonosList({ eventosBonos, searchQuery }: EventoBonosListPr
                       {totalBonos} bono{totalBonos !== 1 ? "s" : ""}
                     </p>
                     <p className="text-base md:text-lg font-bold text-emerald-600">
-                      ${totalRecaudado.toLocaleString()}
+                      ${totalRecaudado.toLocaleString("es-AR")}
                     </p>
                   </div>
                   <Button
@@ -144,7 +144,7 @@ export function EventoBonosList({ eventosBonos, searchQuery }: EventoBonosListPr
                           <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
                             {getEstadoBadge(bono.estado)}
                             <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                              ${bono.precioFinal.toLocaleString()}
+                              ${bono.precioFinal.toLocaleString("es-AR")}
                             </span>
                           </div>
 

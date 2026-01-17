@@ -80,6 +80,7 @@ export async function PUT(
       estado,
       artistas,
       objetivoId,
+      mensajeBonos,
     } = body;
 
     console.log("PUT /api/admin/eventos/[eventoId] - Artistas recibidos:", artistas);
@@ -150,13 +151,16 @@ export async function PUT(
       }
     }
 
+    // Crear fecha con la hora del evento para evitar problemas de timezone
+    const fechaConHora = new Date(`${fecha}T${horaInicio}:00`);
+
     const evento = await prisma.evento.update({
       where: { id: params.eventoId },
       data: {
         nombre,
         slug,
         descripcion,
-        fecha: new Date(fecha),
+        fecha: fechaConHora,
         horaInicio,
         ubicacion,
         capacidad: parseInt(capacidad),
@@ -165,6 +169,7 @@ export async function PUT(
         porcentajeBayer: porcentajeBayer !== undefined ? parseFloat(porcentajeBayer) : undefined,
         imagenPrincipal,
         videoYoutubeId: videoYoutubeId || null,
+        mensajeBonos: mensajeBonos !== undefined ? (mensajeBonos || null) : undefined,
         estado: estado || existingEvento.estado,
       },
       include: {

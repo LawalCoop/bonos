@@ -129,7 +129,7 @@ export default async function AdminEventosPage() {
                           {evento.nombre}
                         </p>
                         <p className="text-xs md:text-sm text-amber-700 dark:text-amber-300">
-                          {new Date(evento.fecha).toLocaleDateString("es-AR")} · {evento.bonosVendidos} bonos · ${evento.totalRecaudado.toLocaleString()}
+                          {new Date(evento.fecha).toLocaleDateString("es-AR")} · {evento.bonosVendidos} bonos · ${evento.totalRecaudado.toLocaleString("es-AR")}
                         </p>
                       </div>
                       <Link href={`/admin/eventos/${evento.id}/cierre`} className="w-full sm:w-auto">
@@ -235,7 +235,7 @@ export default async function AdminEventosPage() {
                     </div>
                     <div className="text-base md:text-lg font-medium flex items-center gap-1">
                       <DollarSign className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" />
-                      {evento.precioBase.toLocaleString()}
+                      {evento.precioBase.toLocaleString("es-AR")}
                     </div>
                   </div>
                   <div>
@@ -252,7 +252,7 @@ export default async function AdminEventosPage() {
                       Recaudado
                     </div>
                     <div className="text-base md:text-lg font-medium text-green-600">
-                      ${evento.totalRecaudado.toLocaleString()}
+                      ${evento.totalRecaudado.toLocaleString("es-AR")}
                     </div>
                   </div>
                   <div>

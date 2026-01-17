@@ -66,10 +66,10 @@ export function PrecioDesglose({
                   </Badge>
                 )}
               </div>
-              <p className="text-4xl font-bold">${Math.round(precioFinal).toLocaleString()}</p>
+              <p className="text-4xl font-bold">${Math.round(precioFinal).toLocaleString("es-AR")}</p>
               {precioFinal < precioBase && (
                 <p className="text-sm text-muted-foreground line-through">
-                  Antes: ${precioBase.toLocaleString()}
+                  Antes: ${precioBase.toLocaleString("es-AR")}
                 </p>
               )}
               {promocion?.tipo === "2x1" && (
@@ -94,7 +94,7 @@ export function PrecioDesglose({
             {/* Precio base */}
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Precio base</span>
-              <span className="font-medium">${precioBase.toLocaleString()}</span>
+              <span className="font-medium">${precioBase.toLocaleString("es-AR")}</span>
             </div>
 
             {/* Promoción */}
@@ -117,7 +117,7 @@ export function PrecioDesglose({
                   </div>
                   {promocion.tipo === "2x1" && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Pagás ${precioBase.toLocaleString()} y llevás 2 bonos
+                      Pagás ${precioBase.toLocaleString("es-AR")} y llevás 2 bonos
                     </p>
                   )}
                 </div>
@@ -162,14 +162,14 @@ export function PrecioDesglose({
             {/* Total */}
             <div className="border-t pt-2 flex items-center justify-between font-bold">
               <span>Total a pagar</span>
-              <span className="text-lg">${Math.round(precioFinal).toLocaleString()}</span>
+              <span className="text-lg">${Math.round(precioFinal).toLocaleString("es-AR")}</span>
             </div>
 
             {/* Ahorro */}
             {ahorro > 0 && (
               <div className="text-center p-2 bg-green-50 dark:bg-green-950/30 rounded-lg">
                 <p className="text-xs font-medium text-green-700 dark:text-green-400">
-                  ✨ Ahorrás ${Math.round(ahorro).toLocaleString()}
+                  ✨ Ahorrás ${Math.round(ahorro).toLocaleString("es-AR")}
                 </p>
               </div>
             )}

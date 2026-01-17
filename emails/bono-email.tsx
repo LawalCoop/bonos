@@ -105,13 +105,13 @@ export default function BonoEmail({
                 <Text style={smallText}>Descuentos aplicados:</Text>
                 {descuentos.map((desc, idx) => (
                   <Text key={idx} style={descuentoText}>
-                    ✓ {desc.nombre} (-{desc.porcentaje}%): -${desc.monto.toLocaleString()}
+                    ✓ {desc.nombre} (-{desc.porcentaje}%): -${desc.monto.toLocaleString("es-AR")}
                   </Text>
                 ))}
               </>
             )}
             <Text style={totalText}>
-              Total pagado: <strong>${precioFinal.toLocaleString()}</strong>
+              Total pagado: <strong>${precioFinal.toLocaleString("es-AR")}</strong>
             </Text>
           </Section>
 

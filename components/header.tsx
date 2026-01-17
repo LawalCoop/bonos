@@ -96,15 +96,21 @@ export function Header() {
           {session ? (
             <>
               {/* Notificaciones */}
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  3
-                </Badge>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-72" align="end">
+                  <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    <Bell className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                    <p>No tenés notificaciones nuevas</p>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Level Progress - Hidden on mobile */}
               <div className="hidden lg:flex items-center gap-3 px-3 py-2 rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 border border-yellow-200 dark:border-yellow-800">

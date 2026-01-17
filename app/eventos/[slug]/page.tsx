@@ -260,52 +260,55 @@ export default async function EventoPage({ params }: EventoPageProps) {
               </>
             )}
 
-            <Separator />
-
-            {/* Artistas */}
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 flex items-center gap-2">
-                <Music className="h-5 w-5 md:h-6 md:w-6" />
-                Les artistas
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                {evento.artistas.map(({ artista, rol }) => (
-                  <Card key={artista.id}>
-                    <CardContent className="p-3 md:p-4">
-                      <div className="flex items-start gap-3 md:gap-4">
-                        {artista.foto && (
-                          <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden flex-shrink-0">
-                            <Image
-                              src={artista.foto}
-                              alt={artista.nombre}
-                              fill
-                              className="object-cover"
-                            />
+            {/* Artistas - solo mostrar si hay artistas asignados */}
+            {evento.artistas && evento.artistas.length > 0 && (
+              <>
+                <Separator />
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 flex items-center gap-2">
+                    <Music className="h-5 w-5 md:h-6 md:w-6" />
+                    Les artistas
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    {evento.artistas.map(({ artista, rol }) => (
+                      <Card key={artista.id}>
+                        <CardContent className="p-3 md:p-4">
+                          <div className="flex items-start gap-3 md:gap-4">
+                            {artista.foto && (
+                              <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden flex-shrink-0">
+                                <Image
+                                  src={artista.foto}
+                                  alt={artista.nombre}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <Link
+                                href={`/artistas/${artista.slug}`}
+                                className="font-bold text-base md:text-lg hover:text-primary transition-colors line-clamp-1"
+                              >
+                                {artista.nombre}
+                              </Link>
+                              {rol && (
+                                <Badge variant="secondary" className="mt-1 text-xs">
+                                  {rol}
+                                </Badge>
+                              )}
+                              <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                                {artista.ciudad}, {artista.pais}
+                                {artista.esLocal && " • Artista local"}
+                              </p>
+                            </div>
                           </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <Link
-                            href={`/artistas/${artista.slug}`}
-                            className="font-bold text-base md:text-lg hover:text-primary transition-colors line-clamp-1"
-                          >
-                            {artista.nombre}
-                          </Link>
-                          {rol && (
-                            <Badge variant="secondary" className="mt-1 text-xs">
-                              {rol}
-                            </Badge>
-                          )}
-                          <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                            {artista.ciudad}, {artista.pais}
-                            {artista.esLocal && " • Artista local"}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             <Separator />
 
@@ -452,8 +455,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
               <div className="text-xs text-muted-foreground">
                 <p className="font-medium mb-1.5 md:mb-2">Sobre los bonos:</p>
                 <p>
-                  Todo lo recaudado va para les artistas y para la ampliación de la biblioteca.
-                  Tu bono llegará por email con un código QR para el ingreso.
+                  {evento.mensajeBonos || "Todo lo recaudado va para les artistas y para la ampliación de la biblioteca. Tu bono llegará por email con un código QR para el ingreso."}
                 </p>
               </div>
             </CardContent>

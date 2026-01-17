@@ -232,12 +232,12 @@ export default function ComprarBonoPage({ params }: { params: { slug: string } }
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Precio base x {cantidad}</span>
-                      <span>${(calculo.precioBase * cantidad).toLocaleString()}</span>
+                      <span>${(calculo.precioBase * cantidad).toLocaleString("es-AR")}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total a pagar</span>
-                      <span>${calculo.precioFinal.toLocaleString()}</span>
+                      <span>${calculo.precioFinal.toLocaleString("es-AR")}</span>
                     </div>
                   </div>
                   <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
@@ -268,8 +268,7 @@ export default function ComprarBonoPage({ params }: { params: { slug: string } }
 
               <div className="text-xs text-muted-foreground text-center">
                 <p>
-                  Al confirmar la compra, recibirás tu bono por email con un código QR.
-                  Todo lo recaudado va para les artistas y la ampliación de la biblioteca.
+                  {evento.mensajeBonos || "Al confirmar la compra, recibirás tu bono por email con un código QR. Todo lo recaudado va para les artistas y la ampliación de la biblioteca."}
                 </p>
               </div>
             </CardContent>
