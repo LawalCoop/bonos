@@ -11,9 +11,11 @@ import { PUNTOS, calcularNivel } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
-});
+function getMPClient() {
+  return new MercadoPagoConfig({
+    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
+  });
+}
 
 export async function POST(
   request: Request,
@@ -260,7 +262,7 @@ export async function POST(
 
     // Create MercadoPago preference
     logger.info("Creando preferencia de MercadoPago");
-    const preference = new Preference(client);
+    const preference = new Preference(getMPClient());
 
     const preferenceData = await preference.create({
       body: {

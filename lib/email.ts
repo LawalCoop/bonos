@@ -6,7 +6,13 @@ import { es } from "date-fns/locale";
 import { logger } from "./logger";
 import { generateTicketPDF } from "./pdf-ticket";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+function getResend() {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
 
 interface EnviarBonoEmailParams {
   to: string;
@@ -81,7 +87,7 @@ export async function enviarBonoEmail({
     });
     logger.info("PDF ticket generado exitosamente");
 
-    const result = await resend.emails.send({
+    const result = await getResend().emails.send({
       from: process.env.RESEND_FROM_EMAIL || "La Bayer Experimental <onboarding@resend.dev>",
       to,
       subject: `Tu bono para ${evento.nombre}`,

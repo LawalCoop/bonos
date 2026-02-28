@@ -6,9 +6,11 @@ import { MercadoPagoConfig, Payment } from "mercadopago";
 
 export const dynamic = "force-dynamic";
 
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
-});
+function getMPClient() {
+  return new MercadoPagoConfig({
+    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
+  });
+}
 
 export async function GET(
   request: Request,
@@ -33,7 +35,7 @@ export async function GET(
     }
 
     // Search for payments with this preference_id in metadata
-    const payment = new Payment(client);
+    const payment = new Payment(getMPClient());
 
     // Try to find payment by searching bonos that might have been updated
     // by the webhook

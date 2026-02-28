@@ -4,7 +4,9 @@ import { getConfig } from '@/lib/config'
 
 export const dynamic = 'force-dynamic'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
+function getGenAI() {
+  return new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+}
 
 type RequestBody = {
   tipo: 'bio' | 'descripcion_evento'
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+    const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     let prompt = ''
 
