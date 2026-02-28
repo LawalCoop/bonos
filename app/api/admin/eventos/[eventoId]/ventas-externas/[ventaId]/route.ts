@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 
 // DELETE - Eliminar una venta externa
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { eventoId: string; ventaId: string } }
+  { params }: { params: Promise<{ eventoId: string; ventaId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId, ventaId } = await params;
+    const session = await auth();
 
     if (!session || session.user.rol !== "ADMIN") {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -17,7 +17,7 @@ export async function DELETE(
 
     await prisma.ventaExterna.delete({
       where: {
-        id: params.ventaId,
+        id: ventaId,
       },
     });
 
@@ -34,10 +34,11 @@ export async function DELETE(
 // PATCH - Actualizar una venta externa
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { eventoId: string; ventaId: string } }
+  { params }: { params: Promise<{ eventoId: string; ventaId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId, ventaId } = await params;
+    const session = await auth();
 
     if (!session || session.user.rol !== "ADMIN") {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -58,7 +59,7 @@ export async function PATCH(
 
     const ventaExterna = await prisma.ventaExterna.update({
       where: {
-        id: params.ventaId,
+        id: ventaId,
       },
       data: {
         ...(nombre && { nombre }),

@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 
 // GET - Obtener todas las ventas externas de un evento
 export async function GET(
   request: NextRequest,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session || session.user.rol !== "ADMIN") {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -17,7 +17,7 @@ export async function GET(
 
     const ventasExternas = await prisma.ventaExterna.findMany({
       where: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
       },
       orderBy: {
         createdAt: "desc",
@@ -37,10 +37,11 @@ export async function GET(
 // POST - Crear una nueva venta externa
 export async function POST(
   request: NextRequest,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session || session.user.rol !== "ADMIN") {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -69,7 +70,7 @@ export async function POST(
 
     // Verificar que el evento existe
     const evento = await prisma.evento.findUnique({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
     });
 
     if (!evento) {
@@ -78,7 +79,7 @@ export async function POST(
 
     const ventaExterna = await prisma.ventaExterna.create({
       data: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
         nombre,
         apellido,
         dni,

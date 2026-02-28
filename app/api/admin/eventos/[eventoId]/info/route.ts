@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -8,17 +7,18 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const evento = await prisma.evento.findUnique({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
       select: {
         id: true,
         nombre: true,
@@ -43,7 +43,7 @@ export async function GET(
         fechaInicio: { lte: now },
         fechaFin: { gte: now },
         OR: [
-          { eventoId: params.eventoId },
+          { eventoId: eventoId },
           { eventoId: null }, // Globales
         ],
         requiereAuth: false,

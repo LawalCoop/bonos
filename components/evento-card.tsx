@@ -86,6 +86,7 @@ export function EventoCard({ evento }: EventoCardProps) {
             src={evento.imagenPrincipal}
             alt={evento.nombre}
             fill
+            unoptimized
             className="object-cover transition-transform hover:scale-105"
           />
           <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">

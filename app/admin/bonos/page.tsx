@@ -133,10 +133,11 @@ async function getStats() {
 export default async function AdminBonosPage({
   searchParams,
 }: {
-  searchParams: { q?: string; estado?: string };
+  searchParams: Promise<{ q?: string; estado?: string }>;
 }) {
+  const { q, estado } = await searchParams;
   const [eventosBonos, stats] = await Promise.all([
-    getBonos(searchParams.q, searchParams.estado),
+    getBonos(q, estado),
     getStats(),
   ]);
 
@@ -232,14 +233,14 @@ export default async function AdminBonosPage({
         </CardHeader>
         <CardContent className="p-3 md:p-6 pt-0">
           <BonosFilter
-            defaultSearch={searchParams.q}
-            defaultEstado={searchParams.estado}
+            defaultSearch={q}
+            defaultEstado={estado}
           />
         </CardContent>
       </Card>
 
       {/* Lista de Bonos Agrupados por Evento */}
-      <EventoBonosList eventosBonos={eventosBonos} searchQuery={searchParams.q} />
+      <EventoBonosList eventosBonos={eventosBonos} searchQuery={q} />
     </div>
   );
 }

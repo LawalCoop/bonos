@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +25,8 @@ interface CalculoDescuentos {
   precioFinal: number;
 }
 
-export default function ComprarBonoPage({ params }: { params: { slug: string } }) {
+export default function ComprarBonoPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
   const { data: session, status } = useSession();
   const router = useRouter();
   const [evento, setEvento] = useState<any>(null);
@@ -39,7 +40,7 @@ export default function ComprarBonoPage({ params }: { params: { slug: string } }
   useEffect(() => {
     async function fetchEvento() {
       try {
-        const res = await fetch(`/api/eventos?slug=${params.slug}`);
+        const res = await fetch(`/api/eventos?slug=${slug}`);
         const data = await res.json();
         if (data.length > 0) {
           setEvento(data[0]);
@@ -68,7 +69,7 @@ export default function ComprarBonoPage({ params }: { params: { slug: string } }
     }
 
     fetchEvento();
-  }, [params.slug]);
+  }, [slug]);
 
   useEffect(() => {
     if (!evento) return;
@@ -90,7 +91,7 @@ export default function ComprarBonoPage({ params }: { params: { slug: string } }
 
   const handleComprar = async () => {
     if (!session) {
-      router.push(`/api/auth/signin?callbackUrl=/eventos/${params.slug}/comprar`);
+      router.push(`/api/auth/signin?callbackUrl=/eventos/${slug}/comprar`);
       return;
     }
 

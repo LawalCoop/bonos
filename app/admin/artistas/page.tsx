@@ -75,6 +75,7 @@ export default async function AdminArtistasPage() {
                           src={artista.foto}
                           alt={artista.nombre}
                           fill
+                          unoptimized
                           className="object-cover"
                         />
                       </div>

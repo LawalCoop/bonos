@@ -58,6 +58,7 @@ export default async function ArtistasPage() {
                           src={artista.foto}
                           alt={artista.nombre}
                           fill
+                          unoptimized
                           className="object-cover"
                         />
                       ) : (

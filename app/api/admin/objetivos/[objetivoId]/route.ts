@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -8,10 +7,11 @@ export const dynamic = "force-dynamic";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { objetivoId: string } }
+  { params }: { params: Promise<{ objetivoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { objetivoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -29,7 +29,7 @@ export async function PUT(
     } = body;
 
     const objetivo = await prisma.objetivoAmpliacion.update({
-      where: { id: params.objetivoId },
+      where: { id: objetivoId },
       data: {
         nombre,
         descripcion,
@@ -53,17 +53,18 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { objetivoId: string } }
+  { params }: { params: Promise<{ objetivoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { objetivoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     await prisma.objetivoAmpliacion.delete({
-      where: { id: params.objetivoId },
+      where: { id: objetivoId },
     });
 
     return NextResponse.json({ message: "Objetivo eliminado" });

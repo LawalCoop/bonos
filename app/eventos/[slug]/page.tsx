@@ -4,8 +4,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +18,9 @@ import { DistribucionDinero } from "@/components/distribucion-dinero";
 import { ObjetivoColectivo } from "@/components/objetivo-colectivo";
 
 interface EventoPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 async function getEvento(slug: string) {
@@ -55,7 +54,8 @@ async function getEvento(slug: string) {
 }
 
 export async function generateMetadata({ params }: EventoPageProps) {
-  const evento = await getEvento(params.slug);
+  const { slug } = await params;
+  const evento = await getEvento(slug);
 
   if (!evento) {
     return {
@@ -75,7 +75,8 @@ export async function generateMetadata({ params }: EventoPageProps) {
 }
 
 export default async function EventoPage({ params }: EventoPageProps) {
-  const evento = await getEvento(params.slug);
+  const { slug } = await params;
+  const evento = await getEvento(slug);
 
   if (!evento) {
     notFound();
@@ -106,7 +107,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
   const promocionActiva = todasPromos[0]; // La de mayor prioridad
 
   // Obtener sesión y descuentos del usuario
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   let descuentosUsuario = null;
   let descuentosPotenciales: any[] = [];
   let precioConDescuentos = precio;
@@ -188,6 +189,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
               src={evento.imagenPrincipal}
               alt={evento.nombre}
               fill
+              unoptimized
               className="object-cover"
               priority
             />
@@ -280,6 +282,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
                                   src={artista.foto}
                                   alt={artista.nombre}
                                   fill
+                                  unoptimized
                                   className="object-cover"
                                 />
                               </div>

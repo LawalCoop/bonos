@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,7 +22,7 @@ async function getUserBonos(userId: string) {
 }
 
 export default async function MisBonosPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     redirect("/api/auth/signin?callbackUrl=/mis-bonos");
@@ -80,6 +79,7 @@ export default async function MisBonosPage() {
                         src={bono.evento.imagenPrincipal}
                         alt={bono.evento.nombre}
                         fill
+                        unoptimized
                         className="object-cover"
                       />
                     )}
@@ -151,6 +151,7 @@ export default async function MisBonosPage() {
                               alt={`QR Code ${bono.codigo}`}
                               width={200}
                               height={200}
+                              unoptimized
                             />
                           </div>
                         </div>

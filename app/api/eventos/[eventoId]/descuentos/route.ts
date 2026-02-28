@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { calcularDescuentos } from "@/lib/descuentos";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
@@ -9,10 +8,11 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
     const { searchParams } = new URL(request.url);
     const cantidadBonos = parseInt(searchParams.get("cantidad") || "1");
     const userIdParam = searchParams.get("userId");
@@ -40,7 +40,7 @@ export async function GET(
     }
 
     const calculo = await calcularDescuentos(
-      params.eventoId,
+      eventoId,
       userId,
       cantidadBonos
     );

@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { bonoId: string } }
+  { params }: { params: Promise<{ bonoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { bonoId } = await params;
+    const session = await auth();
     if (!session?.user?.email || !(await isAdmin(session.user.email))) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     const { estado } = await req.json();
-    const { bonoId } = params;
 
     // Validar estado
     const estadosValidos = ["PENDIENTE", "PAGADO", "UTILIZADO", "CANCELADO"];
@@ -43,15 +42,14 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { bonoId: string } }
+  { params }: { params: Promise<{ bonoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { bonoId } = await params;
+    const session = await auth();
     if (!session?.user?.email || !(await isAdmin(session.user.email))) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
-
-    const { bonoId } = params;
 
     // Marcar como cancelado en lugar de eliminar
     const bono = await prisma.bono.update({

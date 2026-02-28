@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { EventoCard } from "@/components/evento-card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Target, Users, Heart, Calendar } from "lucide-react";
@@ -83,7 +82,7 @@ async function getObjetivoActivo() {
 export default async function Home() {
   const eventos = await getProximosEventos();
   const objetivo = await getObjetivoActivo();
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   // Calcular días faltantes para el objetivo
   const diasFaltantes = objetivo?.fechaObjetivo

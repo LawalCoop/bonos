@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -9,17 +8,18 @@ export const dynamic = "force-dynamic";
 // GET single descuento
 export async function GET(
   request: Request,
-  { params }: { params: { descuentoId: string } }
+  { params }: { params: Promise<{ descuentoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { descuentoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const descuento = await prisma.descuento.findUnique({
-      where: { id: params.descuentoId },
+      where: { id: descuentoId },
       include: {
         organizacion: {
           select: {
@@ -50,10 +50,11 @@ export async function GET(
 // PUT update descuento
 export async function PUT(
   request: Request,
-  { params }: { params: { descuentoId: string } }
+  { params }: { params: Promise<{ descuentoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { descuentoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -76,7 +77,7 @@ export async function PUT(
 
     // Verificar que el descuento existe
     const existingDescuento = await prisma.descuento.findUnique({
-      where: { id: params.descuentoId },
+      where: { id: descuentoId },
     });
 
     if (!existingDescuento) {
@@ -113,7 +114,7 @@ export async function PUT(
     }
 
     const descuento = await prisma.descuento.update({
-      where: { id: params.descuentoId },
+      where: { id: descuentoId },
       data: {
         ...(nombre && { nombre }),
         ...(descripcion !== undefined && { descripcion }),
@@ -160,10 +161,11 @@ export async function PUT(
 // DELETE descuento
 export async function DELETE(
   request: Request,
-  { params }: { params: { descuentoId: string } }
+  { params }: { params: Promise<{ descuentoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { descuentoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -171,7 +173,7 @@ export async function DELETE(
 
     // Verificar que el descuento existe
     const descuento = await prisma.descuento.findUnique({
-      where: { id: params.descuentoId },
+      where: { id: descuentoId },
     });
 
     if (!descuento) {
@@ -182,7 +184,7 @@ export async function DELETE(
     }
 
     await prisma.descuento.delete({
-      where: { id: params.descuentoId },
+      where: { id: descuentoId },
     });
 
     return NextResponse.json({ message: "Descuento eliminado" });
@@ -198,17 +200,18 @@ export async function DELETE(
 // PATCH toggle activo
 export async function PATCH(
   request: Request,
-  { params }: { params: { descuentoId: string } }
+  { params }: { params: Promise<{ descuentoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { descuentoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const descuento = await prisma.descuento.findUnique({
-      where: { id: params.descuentoId },
+      where: { id: descuentoId },
     });
 
     if (!descuento) {
@@ -219,7 +222,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.descuento.update({
-      where: { id: params.descuentoId },
+      where: { id: descuentoId },
       data: {
         activo: !descuento.activo,
       },

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -8,17 +7,18 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: Request,
-  { params }: { params: { promocionId: string } }
+  { params }: { params: Promise<{ promocionId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { promocionId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const promocion = await prisma.promocion.findUnique({
-      where: { id: params.promocionId },
+      where: { id: promocionId },
       include: {
         evento: {
           select: {
@@ -48,10 +48,11 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { promocionId: string } }
+  { params }: { params: Promise<{ promocionId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { promocionId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -87,7 +88,7 @@ export async function PUT(
     }
 
     const promocion = await prisma.promocion.update({
-      where: { id: params.promocionId },
+      where: { id: promocionId },
       data: {
         nombre,
         descripcion,
@@ -115,10 +116,11 @@ export async function PUT(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { promocionId: string } }
+  { params }: { params: Promise<{ promocionId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { promocionId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -128,7 +130,7 @@ export async function PATCH(
     const { activo } = body;
 
     const promocion = await prisma.promocion.update({
-      where: { id: params.promocionId },
+      where: { id: promocionId },
       data: {
         activo,
       },
@@ -146,17 +148,18 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { promocionId: string } }
+  { params }: { params: Promise<{ promocionId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { promocionId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     await prisma.promocion.delete({
-      where: { id: params.promocionId },
+      where: { id: promocionId },
     });
 
     return NextResponse.json({ message: "Promoción eliminada" });

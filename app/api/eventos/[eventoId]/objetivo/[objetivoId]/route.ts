@@ -3,14 +3,15 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { eventoId: string; objetivoId: string } }
+  { params }: { params: Promise<{ eventoId: string; objetivoId: string }> }
 ) {
   try {
+    const { eventoId, objetivoId } = await params;
     const eventoObjetivo = await prisma.eventoObjetivo.findUnique({
       where: {
         eventoId_objetivoId: {
-          eventoId: params.eventoId,
-          objetivoId: params.objetivoId,
+          eventoId: eventoId,
+          objetivoId: objetivoId,
         },
       },
     });

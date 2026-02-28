@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -9,7 +8,7 @@ export const dynamic = "force-dynamic";
 // GET all descuentos
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -42,7 +41,7 @@ export async function GET() {
 // POST create descuento
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

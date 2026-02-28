@@ -58,10 +58,11 @@ async function getObjetivosActivos() {
 export default async function EditEventoPage({
   params,
 }: {
-  params: { eventoId: string };
+  params: Promise<{ eventoId: string }>;
 }) {
+  const { eventoId } = await params;
   const [evento, artistas, objetivos] = await Promise.all([
-    getEvento(params.eventoId),
+    getEvento(eventoId),
     getArtistas(),
     getObjetivosActivos(),
   ]);
@@ -132,7 +133,7 @@ export default async function EditEventoPage({
         </Card>
       )}
 
-      <EventoForm evento={evento} artistas={artistas} objetivos={objetivos} eventoId={params.eventoId} />
+      <EventoForm evento={evento} artistas={artistas} objetivos={objetivos} eventoId={eventoId} />
     </div>
   );
 }

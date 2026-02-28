@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -8,10 +7,11 @@ export const dynamic = "force-dynamic";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { organizacionId: string } }
+  { params }: { params: Promise<{ organizacionId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { organizacionId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -21,7 +21,7 @@ export async function PUT(
     const { nombre, tipo, descuentoPorcentaje, activo } = body;
 
     const organizacion = await prisma.organizacion.update({
-      where: { id: params.organizacionId },
+      where: { id: organizacionId },
       data: {
         nombre,
         tipo: tipo || null,
@@ -42,17 +42,18 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { organizacionId: string } }
+  { params }: { params: Promise<{ organizacionId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { organizacionId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const organizacion = await prisma.organizacion.findUnique({
-      where: { id: params.organizacionId },
+      where: { id: organizacionId },
       include: {
         _count: {
           select: {
@@ -77,7 +78,7 @@ export async function DELETE(
     }
 
     await prisma.organizacion.delete({
-      where: { id: params.organizacionId },
+      where: { id: organizacionId },
     });
 
     return NextResponse.json({ message: "Organización eliminada" });

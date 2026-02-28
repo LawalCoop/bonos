@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 import { MercadoPagoConfig, Preference } from "mercadopago";
@@ -18,12 +17,13 @@ const client = new MercadoPagoConfig({
 
 export async function POST(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
+  const { eventoId } = await params;
   try {
-    logger.info("=== VENTA RAPIDA INICIADA ===", { eventoId: params.eventoId });
+    logger.info("=== VENTA RAPIDA INICIADA ===", { eventoId: eventoId });
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       logger.warn("Intento de acceso no autorizado a venta rápida");
@@ -44,11 +44,11 @@ export async function POST(
 
     // Get event
     const evento = await prisma.evento.findUnique({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
     });
 
     if (!evento) {
-      logger.warn("Evento no encontrado", { eventoId: params.eventoId });
+      logger.warn("Evento no encontrado", { eventoId: eventoId });
       return NextResponse.json(
         { error: "Evento no encontrado" },
         { status: 404 }
@@ -299,7 +299,7 @@ export async function POST(
     logger.error("Error creating quick sale", {
       error: error.message,
       stack: error.stack,
-      eventoId: params.eventoId
+      eventoId: eventoId
     });
     return NextResponse.json(
       {

@@ -55,9 +55,10 @@ async function getArtista(slug: string) {
 export default async function ArtistaDetailPage({
   params
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const artista = await getArtista(params.slug);
+  const { slug } = await params;
+  const artista = await getArtista(slug);
 
   if (!artista) {
     notFound();
@@ -86,6 +87,7 @@ export default async function ArtistaDetailPage({
                     src={artista.foto}
                     alt={artista.nombre}
                     fill
+                    unoptimized
                     className="object-cover"
                   />
                 ) : (
@@ -225,6 +227,7 @@ export default async function ArtistaDetailPage({
                               src={ea.evento.imagenPrincipal}
                               alt={ea.evento.nombre}
                               fill
+                              unoptimized
                               className="object-cover"
                             />
                           ) : (

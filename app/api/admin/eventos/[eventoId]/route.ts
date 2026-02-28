@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -9,17 +8,18 @@ export const dynamic = "force-dynamic";
 // GET single evento
 export async function GET(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const evento = await prisma.evento.findUnique({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
       include: {
         artistas: {
           include: {
@@ -54,10 +54,11 @@ export async function GET(
 // PUT update evento
 export async function PUT(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -87,7 +88,7 @@ export async function PUT(
 
     // Verificar que el evento existe
     const existingEvento = await prisma.evento.findUnique({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
     });
 
     if (!existingEvento) {
@@ -113,16 +114,16 @@ export async function PUT(
 
     // Si se enviaron artistas, primero eliminar los existentes y crear los nuevos
     if (artistas !== undefined) {
-      console.log("Eliminando artistas existentes del evento:", params.eventoId);
+      console.log("Eliminando artistas existentes del evento:", eventoId);
       await prisma.eventoArtista.deleteMany({
-        where: { eventoId: params.eventoId },
+        where: { eventoId: eventoId },
       });
 
       if (artistas.length > 0) {
         console.log("Creando nuevos artistas:", artistas);
         await prisma.eventoArtista.createMany({
           data: artistas.map((a: any) => ({
-            eventoId: params.eventoId,
+            eventoId: eventoId,
             artistaId: a.artistaId,
             orden: a.orden,
             rol: a.rol,
@@ -136,14 +137,14 @@ export async function PUT(
     if (objetivoId !== undefined) {
       // Primero eliminar objetivo existente (si hay)
       await prisma.eventoObjetivo.deleteMany({
-        where: { eventoId: params.eventoId },
+        where: { eventoId: eventoId },
       });
 
       // Si hay un objetivoId nuevo, crear la relación
       if (objetivoId) {
         await prisma.eventoObjetivo.create({
           data: {
-            eventoId: params.eventoId,
+            eventoId: eventoId,
             objetivoId: objetivoId,
           },
         });
@@ -155,7 +156,7 @@ export async function PUT(
     const fechaConHora = new Date(`${fecha}T${horaInicio}:00`);
 
     const evento = await prisma.evento.update({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
       data: {
         nombre,
         slug,
@@ -195,10 +196,11 @@ export async function PUT(
 // DELETE evento
 export async function DELETE(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -206,7 +208,7 @@ export async function DELETE(
 
     // Verificar que el evento existe
     const evento = await prisma.evento.findUnique({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
       include: {
         _count: {
           select: {
@@ -226,7 +228,7 @@ export async function DELETE(
     // Si tiene bonos vendidos, solo cambiar estado a CANCELADO
     if (evento._count.bonos > 0) {
       const updated = await prisma.evento.update({
-        where: { id: params.eventoId },
+        where: { id: eventoId },
         data: {
           estado: "CANCELADO",
         },
@@ -240,7 +242,7 @@ export async function DELETE(
 
     // Si no tiene bonos, eliminar
     await prisma.evento.delete({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
     });
 
     return NextResponse.json({ message: "Evento eliminado" });

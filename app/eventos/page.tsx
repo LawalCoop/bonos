@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { EventoCard } from "@/components/evento-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { calcularDescuentos } from "@/lib/descuentos";
@@ -57,7 +56,7 @@ async function getEventos() {
 
 export default async function EventosPage() {
   const eventos = await getEventos();
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   // Calcular descuentos para cada evento si hay sesión
   const eventosConDescuentos = await Promise.all(

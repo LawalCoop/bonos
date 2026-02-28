@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 import { logger } from "@/lib/logger";
@@ -10,12 +9,13 @@ export const dynamic = "force-dynamic";
 // POST - Finalizar evento y opcionalmente asignar al objetivo
 export async function POST(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
+  const { eventoId } = await params;
   try {
-    logger.info("=== CIERRE DE EVENTO INICIADO ===", { eventoId: params.eventoId });
+    logger.info("=== CIERRE DE EVENTO INICIADO ===", { eventoId: eventoId });
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       logger.warn("Intento de acceso no autorizado a cierre de evento");
@@ -29,7 +29,7 @@ export async function POST(
 
     // Get event with objetivo
     const evento = await prisma.evento.findUnique({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
       include: {
         objetivos: {
           include: {
@@ -40,7 +40,7 @@ export async function POST(
     });
 
     if (!evento) {
-      logger.warn("Evento no encontrado", { eventoId: params.eventoId });
+      logger.warn("Evento no encontrado", { eventoId: eventoId });
       return NextResponse.json(
         { error: "Evento no encontrado" },
         { status: 404 }
@@ -49,7 +49,7 @@ export async function POST(
 
     // Check if already finalized
     if (evento.estado === "FINALIZADO") {
-      logger.warn("Evento ya finalizado", { eventoId: params.eventoId });
+      logger.warn("Evento ya finalizado", { eventoId: eventoId });
       return NextResponse.json(
         { error: "Este evento ya fue finalizado" },
         { status: 400 }
@@ -70,7 +70,7 @@ export async function POST(
       // Contar usuarios únicos del evento que compraron bonos
       const usuariosUnicos = await prisma.bono.findMany({
         where: {
-          eventoId: params.eventoId,
+          eventoId: eventoId,
           estado: {
             in: ["PAGADO", "UTILIZADO"],
           },
@@ -159,20 +159,20 @@ export async function POST(
       logger.info(`Objetivo ${eventoObjetivo.objetivo.nombre} actualizado: +$${montoBayer.toFixed(2)}, +${usuariosNuevos} personas`);
     } else if (asignarAObjetivo) {
       logger.warn("Se solicitó asignar al objetivo pero no hay objetivo activo", {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
       });
     }
 
     // Mark event as FINALIZADO
     const eventoFinalizado = await prisma.evento.update({
-      where: { id: params.eventoId },
+      where: { id: eventoId },
       data: {
         estado: "FINALIZADO",
       },
     });
 
     logger.info("Evento marcado como FINALIZADO", {
-      eventoId: params.eventoId,
+      eventoId: eventoId,
       eventoNombre: eventoFinalizado.nombre,
     });
 
@@ -186,7 +186,7 @@ export async function POST(
     logger.error("Error en cierre de evento", {
       error: error.message,
       stack: error.stack,
-      eventoId: params.eventoId,
+      eventoId: eventoId,
     });
     return NextResponse.json(
       {

@@ -12,9 +12,10 @@ async function getArtista(artistaId: string) {
 export default async function EditArtistaPage({
   params,
 }: {
-  params: { artistaId: string };
+  params: Promise<{ artistaId: string }>;
 }) {
-  const artista = await getArtista(params.artistaId);
+  const { artistaId } = await params;
+  const artista = await getArtista(artistaId);
 
   if (!artista) {
     notFound();

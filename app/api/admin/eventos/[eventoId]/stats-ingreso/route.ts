@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -8,10 +7,11 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -20,7 +20,7 @@ export async function GET(
     // Count bonos utilizados (ingresados)
     const bonosIngresados = await prisma.bono.count({
       where: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
         estado: "UTILIZADO",
       },
     });
@@ -28,7 +28,7 @@ export async function GET(
     // Count total bonos pagados (los que pueden ingresar)
     const totalBonosPagados = await prisma.bono.count({
       where: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
         estado: {
           in: ["PAGADO", "UTILIZADO"],
         },
@@ -38,7 +38,7 @@ export async function GET(
     // Count ventas externas utilizadas (ingresadas)
     const ventasExternasIngresadas = await prisma.ventaExterna.count({
       where: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
         utilizado: true,
       },
     });
@@ -46,7 +46,7 @@ export async function GET(
     // Count total ventas externas (todas pueden ingresar)
     const totalVentasExternas = await prisma.ventaExterna.count({
       where: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
       },
     });
 

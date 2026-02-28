@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
 // PUT - Actualizar gasto
 export async function PUT(
   request: Request,
-  { params }: { params: { eventoId: string; gastoId: string } }
+  { params }: { params: Promise<{ eventoId: string; gastoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId, gastoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -43,7 +43,7 @@ export async function PUT(
     }
 
     const gasto = await prisma.gastoEvento.update({
-      where: { id: params.gastoId },
+      where: { id: gastoId },
       data: {
         concepto,
         descripcion,
@@ -72,17 +72,18 @@ export async function PUT(
 // DELETE - Eliminar gasto
 export async function DELETE(
   request: Request,
-  { params }: { params: { eventoId: string; gastoId: string } }
+  { params }: { params: Promise<{ eventoId: string; gastoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId, gastoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     await prisma.gastoEvento.delete({
-      where: { id: params.gastoId },
+      where: { id: gastoId },
     });
 
     return NextResponse.json({ success: true });
@@ -98,17 +99,18 @@ export async function DELETE(
 // PATCH - Marcar como pagado/no pagado
 export async function PATCH(
   request: Request,
-  { params }: { params: { eventoId: string; gastoId: string } }
+  { params }: { params: Promise<{ eventoId: string; gastoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId, gastoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const gasto = await prisma.gastoEvento.findUnique({
-      where: { id: params.gastoId },
+      where: { id: gastoId },
     });
 
     if (!gasto) {
@@ -119,7 +121,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.gastoEvento.update({
-      where: { id: params.gastoId },
+      where: { id: gastoId },
       data: {
         pagado: !gasto.pagado,
         fechaPago: !gasto.pagado ? new Date() : null,

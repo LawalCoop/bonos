@@ -2,8 +2,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, TrendingUp, Users, Target, DollarSign, Award } from "lucide-react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { calcularDistribucionReal } from "@/lib/distribucion";
@@ -12,9 +11,10 @@ import { NIVELES, calcularNivel } from "@/lib/constants";
 export default async function PagoExitoPage({
   searchParams,
 }: {
-  searchParams: { payment_id?: string; external_reference?: string };
+  searchParams: Promise<{ payment_id?: string; external_reference?: string }>;
 }) {
-  const session = await getServerSession(authOptions);
+  const resolvedSearchParams = await searchParams;
+  const session = await auth();
 
   if (!session?.user?.id) {
     redirect("/");

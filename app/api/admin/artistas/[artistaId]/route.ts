@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
@@ -9,10 +8,11 @@ export const dynamic = "force-dynamic";
 // PUT update artista
 export async function PUT(
   request: Request,
-  { params }: { params: { artistaId: string } }
+  { params }: { params: Promise<{ artistaId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { artistaId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -37,7 +37,7 @@ export async function PUT(
 
     // Verificar que el artista existe
     const existingArtista = await prisma.artista.findUnique({
-      where: { id: params.artistaId },
+      where: { id: artistaId },
     });
 
     if (!existingArtista) {
@@ -62,7 +62,7 @@ export async function PUT(
     }
 
     const artista = await prisma.artista.update({
-      where: { id: params.artistaId },
+      where: { id: artistaId },
       data: {
         nombre,
         slug,
@@ -93,10 +93,11 @@ export async function PUT(
 // DELETE artista
 export async function DELETE(
   request: Request,
-  { params }: { params: { artistaId: string } }
+  { params }: { params: Promise<{ artistaId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { artistaId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -104,7 +105,7 @@ export async function DELETE(
 
     // Verificar que el artista existe
     const artista = await prisma.artista.findUnique({
-      where: { id: params.artistaId },
+      where: { id: artistaId },
       include: {
         _count: {
           select: {
@@ -130,7 +131,7 @@ export async function DELETE(
     }
 
     await prisma.artista.delete({
-      where: { id: params.artistaId },
+      where: { id: artistaId },
     });
 
     return NextResponse.json({ message: "Artista eliminado" });

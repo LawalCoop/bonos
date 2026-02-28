@@ -1,9 +1,8 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export async function requireAdmin() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     redirect("/api/auth/signin?callbackUrl=/admin");
@@ -17,7 +16,7 @@ export async function requireAdmin() {
 }
 
 export async function requireSuperAdmin() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     redirect("/api/auth/signin?callbackUrl=/admin");

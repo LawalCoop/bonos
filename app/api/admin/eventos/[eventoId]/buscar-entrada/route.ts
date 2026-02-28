@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 
 // GET - Buscar entradas por apellido, nombre o DNI
 export async function GET(
   request: NextRequest,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session || session.user.rol !== "ADMIN") {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -30,7 +30,7 @@ export async function GET(
     // Buscar en bonos (por nombre de usuario o email)
     const bonos = await prisma.bono.findMany({
       where: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
         estado: { in: ["PAGADO", "UTILIZADO"] },
         usuario: {
           OR: [
@@ -57,7 +57,7 @@ export async function GET(
     // Buscar en ventas externas (por apellido, nombre o DNI)
     const ventasExternas = await prisma.ventaExterna.findMany({
       where: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
         OR: [
           { apellido: { contains: searchTerm, mode: "insensitive" } },
           { nombre: { contains: searchTerm, mode: "insensitive" } },

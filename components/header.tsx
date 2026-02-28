@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -14,13 +15,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { User, LogOut, Ticket, Bell, Zap } from "lucide-react";
+import { User, LogOut, Ticket, Bell, Zap, Loader2 } from "lucide-react";
 import { NIVELES, getNivelInfo } from "@/lib/constants";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useConfig } from "@/hooks/use-config";
 
 export function Header() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { config } = useConfig();
 
   // Calculate level progress
@@ -181,16 +184,39 @@ export function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-red-600"
-                    onClick={() => signOut()}
+                    disabled={isSigningOut}
+                    onClick={async () => {
+                      setIsSigningOut(true);
+                      await signOut();
+                    }}
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Cerrar sesión</span>
+                    {isSigningOut ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <LogOut className="mr-2 h-4 w-4" />
+                    )}
+                    <span>{isSigningOut ? "Cerrando..." : "Cerrar sesión"}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
           ) : (
-            <Button onClick={() => signIn("google")}>Ingresar</Button>
+            <Button
+              onClick={async () => {
+                setIsSigningIn(true);
+                await signIn("google");
+              }}
+              disabled={isSigningIn || status === "loading"}
+            >
+              {isSigningIn || status === "loading" ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cargando...
+                </>
+              ) : (
+                "Ingresar"
+              )}
+            </Button>
           )}
         </div>
       </div>

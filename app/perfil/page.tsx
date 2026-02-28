@@ -258,6 +258,7 @@ export default function PerfilPage() {
                   alt={perfil.user.name || "Usuario"}
                   width={80}
                   height={80}
+                  unoptimized
                   className="rounded-full"
                 />
               )}

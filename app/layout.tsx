@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import "nprogress/nprogress.css";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { ProgressBar } from "@/components/progress-bar";
 
 const inter = Inter({ subsets: ["latin"] });
 const poppins = Poppins({
@@ -26,6 +28,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body className={`${inter.className} ${poppins.variable}`}>
         <Providers>
+          <ProgressBar />
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>

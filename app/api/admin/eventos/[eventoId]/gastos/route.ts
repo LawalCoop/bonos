@@ -1,23 +1,23 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 
 // GET - Listar gastos de un evento
 export async function GET(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const gastos = await prisma.gastoEvento.findMany({
-      where: { eventoId: params.eventoId },
+      where: { eventoId: eventoId },
       orderBy: { createdAt: "desc" },
     });
 
@@ -34,10 +34,11 @@ export async function GET(
 // POST - Crear nuevo gasto
 export async function POST(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -85,7 +86,7 @@ export async function POST(
 
     const gasto = await prisma.gastoEvento.create({
       data: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
         concepto,
         descripcion,
         monto: parseFloat(monto),

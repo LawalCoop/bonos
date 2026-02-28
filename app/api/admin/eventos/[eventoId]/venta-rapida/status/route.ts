@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
 import { MercadoPagoConfig, Payment } from "mercadopago";
@@ -13,10 +12,11 @@ const client = new MercadoPagoConfig({
 
 export async function GET(
   request: Request,
-  { params }: { params: { eventoId: string } }
+  { params }: { params: Promise<{ eventoId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { eventoId } = await params;
+    const session = await auth();
 
     if (!session?.user || !isAdmin(session.user.rol)) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -39,7 +39,7 @@ export async function GET(
     // by the webhook
     const bonos = await prisma.bono.findMany({
       where: {
-        eventoId: params.eventoId,
+        eventoId: eventoId,
         codigo: {
           startsWith: "VENTA-",
         },
