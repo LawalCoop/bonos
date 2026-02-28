@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Ticket, DollarSign, QrCode, Plus, Filter } from "lucide-react";

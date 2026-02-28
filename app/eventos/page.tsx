@@ -9,7 +9,7 @@ export const metadata = {
   description: "Todos los eventos culturales de la Biblioteca Popular Osvaldo Bayer",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 async function getEventos() {
   // Obtener fecha de inicio del día en UTC

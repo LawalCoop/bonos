@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ArtistaForm } from "@/components/admin/artista-form";
+
+export const dynamic = "force-dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { notFound } from "next/navigation";
 

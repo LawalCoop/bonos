@@ -276,12 +276,12 @@ export async function POST(
           },
         ],
         back_urls: {
-          success: `${process.env.NEXT_PUBLIC_URL}/admin/ingreso`,
-          failure: `${process.env.NEXT_PUBLIC_URL}/admin/ingreso`,
-          pending: `${process.env.NEXT_PUBLIC_URL}/admin/ingreso`,
+          success: `${process.env.NEXT_PUBLIC_APP_URL}/admin/ingreso`,
+          failure: `${process.env.NEXT_PUBLIC_APP_URL}/admin/ingreso`,
+          pending: `${process.env.NEXT_PUBLIC_APP_URL}/admin/ingreso`,
         },
         auto_return: "approved",
-        notification_url: `${process.env.NEXT_PUBLIC_URL}/api/webhooks/mercadopago`,
+        notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/pagos/webhook`,
         metadata: {
           bonos: bonos.map((b) => b.id).join(","),
           eventoId: evento.id,

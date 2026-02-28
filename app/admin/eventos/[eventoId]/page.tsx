@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { EventoForm } from "@/components/admin/evento-form";
+
+export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

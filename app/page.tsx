@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { calcularDescuentos } from "@/lib/descuentos";
 import { differenceInDays } from "date-fns";
 
-export const revalidate = 60; // Revalidar cada 60 segundos
+export const dynamic = "force-dynamic";
 
 async function getProximosEventos() {
   // Obtener fecha de inicio del día en UTC

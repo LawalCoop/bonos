@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Music, MapPin, Calendar, Heart } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 async function getArtistas() {
   const artistas = await prisma.artista.findMany({
     orderBy: {

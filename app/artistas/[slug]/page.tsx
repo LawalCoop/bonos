@@ -14,6 +14,8 @@ import {
   ExternalLink
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import { SiSpotify, SiBandcamp, SiYoutube } from "react-icons/si";
 
 async function getArtista(slug: string) {

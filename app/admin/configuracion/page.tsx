@@ -1,4 +1,6 @@
 import { getConfig } from '@/lib/config'
+
+export const dynamic = "force-dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ConfigForm } from '@/components/admin/config-form'
 import { NivelesConfig } from '@/components/admin/niveles-config'

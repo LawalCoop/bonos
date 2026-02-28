@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Ticket, Users, DollarSign, TrendingUp, Music, Target } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

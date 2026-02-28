@@ -2,6 +2,8 @@ import { EventoForm } from "@/components/admin/evento-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 async function getArtistas() {
   return prisma.artista.findMany({
     select: {

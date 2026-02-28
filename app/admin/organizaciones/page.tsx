@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import { OrganizacionesList } from "@/components/admin/organizaciones-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 

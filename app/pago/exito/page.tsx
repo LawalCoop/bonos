@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, TrendingUp, Users, Target, DollarSign, Award } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { calcularDistribucionReal } from "@/lib/distribucion";
 import { NIVELES, calcularNivel } from "@/lib/constants";
