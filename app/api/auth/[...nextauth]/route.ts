@@ -3,12 +3,12 @@ import { handlers } from "@/auth";
 const originalGET = handlers.GET;
 const originalPOST = handlers.POST;
 
-export const GET = async (req: Request) => {
-  console.log("[AUTH] GET request:", req.url);
-  return originalGET(req);
+export const GET = async (...args: Parameters<typeof handlers.GET>) => {
+  console.log("[AUTH] GET request:", args[0]?.url);
+  return originalGET(...args);
 };
 
-export const POST = async (req: Request) => {
-  console.log("[AUTH] POST request:", req.url);
-  return originalPOST(req);
+export const POST = async (...args: Parameters<typeof handlers.POST>) => {
+  console.log("[AUTH] POST request:", args[0]?.url);
+  return originalPOST(...args);
 };
