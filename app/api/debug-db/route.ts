@@ -9,6 +9,7 @@ export async function GET() {
     return NextResponse.json({
       status: "connected",
       dbUrl: process.env.DATABASE_URL?.replace(/\/\/.*@/, "//***@"),
+      dbHost: process.env.DATABASE_URL?.match(/@([^:/]+)/)?.[1] || "unknown",
       users: userCount,
       accounts: accountCount,
       sessions: sessionCount,
