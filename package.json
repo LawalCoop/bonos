@@ -13,7 +13,8 @@
     "postinstall": "prisma generate",
     "make-admin": "tsx scripts/make-admin.ts",
     "seed-descuentos": "tsx scripts/seed-descuentos.ts",
-    "seed-config": "tsx scripts/seed-config.ts"
+    "seed-config": "tsx scripts/seed-config.ts",
+    "seed-niveles": "tsx scripts/seed-niveles.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.5.0",
