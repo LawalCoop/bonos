@@ -80,3 +80,12 @@ notas-flor-desarrollo/
 
 # Manual de marca (referencia local)
 Manual de marca BPOB.pdf
+
+# imagenes de stock sueltas en la raiz (13MB, no son assets del proyecto)
+/*.jpg
+/*.jpeg
+/*.png
+
+# config local de Claude Code (contiene credenciales en texto plano)
+.claude/settings.local.json
+.claude/projects/
